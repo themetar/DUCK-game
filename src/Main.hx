@@ -5,7 +5,7 @@ import openfl.Lib;
 
 /**
  * ...
- * @author Diimtar
+ * @author Dimitar
  */
 class Main extends Sprite {
 
