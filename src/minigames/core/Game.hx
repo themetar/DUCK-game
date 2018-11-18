@@ -3,6 +3,7 @@ package minigames.core;
 import openfl.Lib;
 import openfl.display.Sprite;
 import openfl.events.Event;
+import openfl.events.KeyboardEvent;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
@@ -29,10 +30,14 @@ class Game extends Sprite {
 		
 		addEventListener(Event.ADDED_TO_STAGE, function (event:Event) {
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyboardEvent);
+			stage.addEventListener(KeyboardEvent.KEY_UP, onKeyboardEvent);
 		});
 		
 		addEventListener(Event.REMOVED_FROM_STAGE, function(event:Event) {
 			removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+			stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyboardEvent);
+			stage.removeEventListener(KeyboardEvent.KEY_UP, onKeyboardEvent);
 		});
 	}
 	
@@ -59,6 +64,10 @@ class Game extends Sprite {
 	}
 	
 	private function render(delta_time:Int):Void{
+		
+	}
+	
+	private function onKeyboardEvent(event:KeyboardEvent):Void{
 		
 	}
 	
