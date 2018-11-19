@@ -6,6 +6,7 @@ import openfl.events.Event;
 import openfl.events.KeyboardEvent;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.ui.Keyboard;
 
 /**
  * ...
@@ -19,14 +20,19 @@ class Game extends Sprite {
 	private var paused:Bool;
 	
 	private var time:Int;
+	
+	private var key_event_filter:Map<Int, String>;
 
 	public function new() {
 		super();
 		
 		camera = new Rectangle(0, 0, 800, 600);
+		
 		paused = false;
 		
 		time = Lib.getTimer();
+		
+		key_event_filter = new Map();
 		
 		addEventListener(Event.ADDED_TO_STAGE, function (event:Event) {
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
@@ -68,6 +74,18 @@ class Game extends Sprite {
 	}
 	
 	private function onKeyboardEvent(event:KeyboardEvent):Void{
+		switch(event.keyCode){
+			case Keyboard.LEFT | Keyboard.RIGHT | Keyboard.UP | Keyboard.DOWN | Keyboard.SPACE:
+				if (key_event_filter.get(event.keyCode) != event.type){
+					handleKeyboardEvent(event);
+					key_event_filter.set(event.keyCode, event.type);
+				}
+			default:
+				return;
+		}
+	}
+	
+	private function handleKeyboardEvent(event:KeyboardEvent): Void{
 		
 	}
 	
