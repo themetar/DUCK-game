@@ -1,6 +1,7 @@
 package;
 
 import minigames.FishingGame;
+import minigames.core.GameEvent;
 import openfl.display.Sprite;
 import openfl.Lib;
 
@@ -21,6 +22,7 @@ class Main extends Sprite {
 		
 		fishing_game = new FishingGame();
 		addChild(fishing_game);
+		fishing_game.addEventListener(GameEvent.SCORE, function(event) {trace("SCORE!"); });
 	}
 
 }
