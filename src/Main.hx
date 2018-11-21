@@ -1,6 +1,7 @@
 package;
 
 import minigames.FishingGame;
+import minigames.SnakeingGame;
 import minigames.core.GameEvent;
 import openfl.display.Sprite;
 import openfl.Lib;
@@ -13,6 +14,8 @@ class Main extends Sprite {
 	
 	// just testing
 	var fishing_game:FishingGame;
+	
+	var snakeing_game:SnakeingGame;
 
 	public function new() {
 		super();
@@ -20,9 +23,12 @@ class Main extends Sprite {
 		// Assets:
 		// openfl.Assets.getBitmapData("img/assetname.jpg");
 		
-		fishing_game = new FishingGame();
-		addChild(fishing_game);
-		fishing_game.addEventListener(GameEvent.SCORE, function(event) {trace("SCORE!"); });
+		//fishing_game = new FishingGame();
+		//addChild(fishing_game);
+		//fishing_game.addEventListener(GameEvent.SCORE, function(event) {trace("SCORE!"); });
+		
+		snakeing_game = new SnakeingGame();
+		addChild(snakeing_game);
 	}
 
 }
