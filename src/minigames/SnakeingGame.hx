@@ -71,6 +71,7 @@ class SnakeingGame extends Game {
 			var duckling = new Duckling();
 			duckling.sprite = Assets.getMovieClip("graphics:duckling");
 			duckling.target_y = duck.target_y + i + 1;
+			duckling.target_x = duck.target_x;
 			duckling.speed_y = duck.speed_y;
 			duckling.x = duck.x;
 			duckling.y = duck.y + i +1;
@@ -86,6 +87,56 @@ class SnakeingGame extends Game {
 		
 		var millisec_delta:Float = delta_time / 1000;
 		
+		// ducklings
+		
+		for (i in 1...ducklings.length) {
+			var duckling = ducklings[i];
+			
+			var remaining_distance = (duckling.target_x - duckling.x) + (duckling.target_y - duckling.y); // one is always 0
+			var traverse = duckling.speed_x * millisec_delta + duckling.speed_y * millisec_delta; // one is always 0
+			var reached_target = Math.abs(remaining_distance) <= Math.abs(traverse);
+			
+			var changed_direction = false;
+			
+			if (reached_target) {
+				var new_target_x = Math.round(ducklings[i - 1].x);
+				var new_target_y = Math.round(ducklings[i - 1].y);
+				
+				var new_speed_x = new_target_x > duckling.target_x ? walk_speed : new_target_x < duckling.target_x ? -walk_speed : 0;
+				var new_speed_y = new_target_y > duckling.target_y ? walk_speed : new_target_y < duckling.target_y ? -walk_speed : 0;
+				
+				changed_direction = new_speed_x != duckling.speed_x && new_speed_y != duckling.speed_y;
+				
+				duckling.target_x = new_target_x;
+				duckling.target_y = new_target_y;
+				
+				duckling.speed_x = new_speed_x;
+				duckling.speed_y = new_speed_y;
+			}
+			
+			if (reached_target && changed_direction) {
+				var traverse_before = traverse - remaining_distance;
+			
+				var traverse_after = traverse - traverse_before;
+				
+				// change of direction
+				if (duckling.speed_x == 0) {
+					// will be continuing on y
+					duckling.x = duckling.target_x;
+					//duckling.y += traverse_after;
+				} else {
+					// will be continuing on x
+					//duckling.x += traverse_after;
+					duckling.y = duckling.target_y;
+				}
+			} else {
+				duckling.x += duckling.speed_x * millisec_delta;
+				duckling.y += duckling.speed_y * millisec_delta;
+			}
+		}
+		
+		// duck
+		
 		var remaining_distance = (duck.target_x - duck.x) + (duck.target_y - duck.y); // one is always 0
 		
 		var traverse = duck.speed_x * millisec_delta + duck.speed_y * millisec_delta; // one is always 0
@@ -97,7 +148,7 @@ class SnakeingGame extends Game {
 			
 			var traverse_after = traverse - traverse_before;
 			
-			if (input_direction != None && duck_direction != input_direction) {
+			if (input_direction != None && duck_direction != input_direction && input_direction != opositeDirection(duck_direction)) {
 				// change of direction
 				switch (duck_direction) {
 					case Up | Down :
@@ -135,10 +186,6 @@ class SnakeingGame extends Game {
 		} else {
 			duck.x += duck.speed_x * millisec_delta;
 			duck.y += duck.speed_y * millisec_delta;
-		}
-		
-		for (i in 1...ducklings.length) {
-			
 		}
 		
 		
