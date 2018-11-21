@@ -16,7 +16,7 @@ class Duckling extends NPC {
 
 	public function new() {
 		super();
-		
+		speed_x = speed_y = 0;
 	}
 	
 }

@@ -1,6 +1,7 @@
 package minigames;
 
 import minigames.core.Game;
+import minigames.npcs.Duckling;
 import openfl.display.MovieClip;
 import openfl.Assets;
 import openfl.events.KeyboardEvent;
@@ -45,6 +46,8 @@ class SnakeingGame extends Game {
 	private	var origin_y:Float;
 	
 	private var duck_graphic:MovieClip;
+	
+	private var ducklings:Array<Duckling>;
 
 	public function new() {
 		super();
@@ -68,6 +71,20 @@ class SnakeingGame extends Game {
 		
 		duck_graphic = Assets.getMovieClip ("graphics:duck");
 		addChild (duck_graphic);
+		
+		ducklings = new Array<Duckling>();
+		for (i in 0...2) {
+			var duckling = new Duckling();
+			duckling.sprite = Assets.getMovieClip("graphics:duckling");
+			duckling.target_y = duck_target_y + i + 1;
+			duckling.speed_y = duck_speed_y;
+			duckling.x = duck_grid_x;
+			duckling.y = duck_grid_y + i +1;
+			
+			ducklings.push(duckling);
+			
+			addChild(duckling.sprite);
+		}
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -92,9 +109,9 @@ class SnakeingGame extends Game {
 				switch (duck_direction) {
 					case Up | Down :
 						duck_grid_x += traverse_after;
-						duck_grid_y += traverse_before;
+						duck_grid_y = duck_target_y;
 					case Left | Right :
-						duck_grid_x += traverse_before;
+						duck_grid_x = duck_target_x;
 						duck_grid_y += traverse_after;
 					case None:
 						None;
@@ -127,11 +144,33 @@ class SnakeingGame extends Game {
 		
 	}
 	
+	private function opositeDirection(d:Direction):Direction{
+		return switch(d){
+			case Left: Right;
+			case Right: Left;
+			case Up: Down;
+			case Down: Up;
+			case None: None;
+		}
+	}
+	
 	override function render(delta_time:Int):Void {
 		super.render(delta_time);
 		
+		graphics.clear();
+		graphics.lineStyle(1, 0xffffff);
+		for (r in 0...GRID_HEIGHT)
+			for (c in 0...GRID_WIDTH) {
+				graphics.drawRect(origin_x + c * CELL_SIZE, origin_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+			}
+		
 		duck_graphic.x = origin_x + duck_grid_x * CELL_SIZE - camera.x;
 		duck_graphic.y = origin_y + duck_grid_y * CELL_SIZE - camera.y;
+		
+		for (duckling in ducklings) {
+			duckling.sprite.x = origin_x + duckling.x * CELL_SIZE - camera.x;
+			duckling.sprite.y = origin_y + duckling.y * CELL_SIZE - camera.y;
+		}
 	}
 	
 	override function handleKeyboardEvent(event:KeyboardEvent):Void {
