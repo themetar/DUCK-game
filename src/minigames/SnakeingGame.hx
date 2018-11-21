@@ -20,14 +20,7 @@ enum Direction {
 }
 class SnakeingGame extends Game {
 	
-	private var duck_grid_x:Float;
-	private var duck_grid_y:Float;
-	
-	private var duck_target_x:Float;
-	private var duck_target_y:Float;	
-	
-	private var duck_speed_x:Float;
-	private var duck_speed_y:Float;
+	private var duck:Duckling; // the Duck is part of the 'snake'
 	
 	private var walk_speed:Float;
 	
@@ -45,23 +38,23 @@ class SnakeingGame extends Game {
 	private var origin_x:Float;
 	private	var origin_y:Float;
 	
-	private var duck_graphic:MovieClip;
-	
 	private var ducklings:Array<Duckling>;
 
 	public function new() {
 		super();
 		
-		duck_grid_x = Std.int(GRID_WIDTH / 2);
-		duck_grid_y = Std.int(GRID_HEIGHT / 2);
+		duck = new Duckling();
 		
-		duck_target_x = duck_grid_x;
-		duck_target_y = duck_grid_y - 1;
+		duck.x = Std.int(GRID_WIDTH / 2);
+		duck.y = Std.int(GRID_HEIGHT / 2);
+		
+		duck.target_x = duck.x;
+		duck.target_y = duck.y - 1;
 		
 		walk_speed = WALK_SPEED_MIN;
 		
-		duck_speed_x = 0;
-		duck_speed_y = -walk_speed;
+		duck.speed_x = 0;
+		duck.speed_y = -walk_speed;
 		
 		duck_direction = Up;
 		input_direction = None;
@@ -69,17 +62,18 @@ class SnakeingGame extends Game {
 		origin_x = Std.int((camera.width - GRID_WIDTH * CELL_SIZE) / 2);
 		origin_y = Std.int((camera.height - GRID_HEIGHT * CELL_SIZE) / 2);
 		
-		duck_graphic = Assets.getMovieClip ("graphics:duck");
-		addChild (duck_graphic);
+		duck.sprite = Assets.getMovieClip ("graphics:duck");
+		addChild (duck.sprite);
 		
-		ducklings = new Array<Duckling>();
+		ducklings = [duck];
+		
 		for (i in 0...2) {
 			var duckling = new Duckling();
 			duckling.sprite = Assets.getMovieClip("graphics:duckling");
-			duckling.target_y = duck_target_y + i + 1;
-			duckling.speed_y = duck_speed_y;
-			duckling.x = duck_grid_x;
-			duckling.y = duck_grid_y + i +1;
+			duckling.target_y = duck.target_y + i + 1;
+			duckling.speed_y = duck.speed_y;
+			duckling.x = duck.x;
+			duckling.y = duck.y + i +1;
 			
 			ducklings.push(duckling);
 			
@@ -92,14 +86,13 @@ class SnakeingGame extends Game {
 		
 		var millisec_delta:Float = delta_time / 1000;
 		
-		var remaining_distance = (duck_target_x - duck_grid_x) + (duck_target_y - duck_grid_y); // one is always 0
+		var remaining_distance = (duck.target_x - duck.x) + (duck.target_y - duck.y); // one is always 0
 		
-		var traverse = duck_speed_x * millisec_delta + duck_speed_y * millisec_delta; // one is always 0
+		var traverse = duck.speed_x * millisec_delta + duck.speed_y * millisec_delta; // one is always 0
 		
-		if (Math.abs(traverse) < Math.abs(remaining_distance)) {
-			duck_grid_x += duck_speed_x * millisec_delta;
-			duck_grid_y += duck_speed_y * millisec_delta;
-		} else {
+		var reached_target = Math.abs(remaining_distance) < Math.abs(traverse);
+		
+		if (reached_target) {
 			var traverse_before = traverse - remaining_distance;
 			
 			var traverse_after = traverse - traverse_before;
@@ -108,11 +101,11 @@ class SnakeingGame extends Game {
 				// change of direction
 				switch (duck_direction) {
 					case Up | Down :
-						duck_grid_x += traverse_after;
-						duck_grid_y = duck_target_y;
+						duck.x += traverse_after;
+						duck.y = duck.target_y;
 					case Left | Right :
-						duck_grid_x = duck_target_x;
-						duck_grid_y += traverse_after;
+						duck.x = duck.target_x;
+						duck.y += traverse_after;
 					case None:
 						None;
 				}
@@ -123,21 +116,28 @@ class SnakeingGame extends Game {
 			
 			switch (duck_direction) {
 				case Left:
-					duck_target_x -= 1;
-					duck_speed_x =-walk_speed; duck_speed_y =  0;
+					duck.target_x -= 1;
+					duck.speed_x =-walk_speed; duck.speed_y =  0;
 				case Right:
-					duck_target_x += 1;
-					duck_speed_x = walk_speed; duck_speed_y = 0;
+					duck.target_x += 1;
+					duck.speed_x = walk_speed; duck.speed_y = 0;
 				case Up:
-					duck_target_y -= 1;
-					duck_speed_x = 0; duck_speed_y = -walk_speed;
+					duck.target_y -= 1;
+					duck.speed_x = 0; duck.speed_y = -walk_speed;
 				case Down:
-					duck_target_y += 1;
-					duck_speed_x = 0; duck_speed_y = walk_speed;
+					duck.target_y += 1;
+					duck.speed_x = 0; duck.speed_y = walk_speed;
 				case None:
 					throw "Error";
 			}
 			
+			
+		} else {
+			duck.x += duck.speed_x * millisec_delta;
+			duck.y += duck.speed_y * millisec_delta;
+		}
+		
+		for (i in 1...ducklings.length) {
 			
 		}
 		
@@ -163,9 +163,6 @@ class SnakeingGame extends Game {
 			for (c in 0...GRID_WIDTH) {
 				graphics.drawRect(origin_x + c * CELL_SIZE, origin_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 			}
-		
-		duck_graphic.x = origin_x + duck_grid_x * CELL_SIZE - camera.x;
-		duck_graphic.y = origin_y + duck_grid_y * CELL_SIZE - camera.y;
 		
 		for (duckling in ducklings) {
 			duckling.sprite.x = origin_x + duckling.x * CELL_SIZE - camera.x;
