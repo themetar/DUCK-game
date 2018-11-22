@@ -67,7 +67,7 @@ class SnakeingGame extends Game {
 		
 		ducklings = [duck];
 		
-		for (i in 0...6) {
+		for (i in 0...7) {
 			var duckling = new Duckling();
 			duckling.sprite = Assets.getMovieClip("graphics:duckling");
 			duckling.target_y = duck.target_y + i + 1;
@@ -195,8 +195,8 @@ class SnakeingGame extends Game {
 			}
 		
 		for (duckling in ducklings) {
-			duckling.sprite.x = origin_x + duckling.x * CELL_SIZE - camera.x;
-			duckling.sprite.y = origin_y + duckling.y * CELL_SIZE - camera.y;
+			duckling.sprite.x = origin_x + duckling.x * CELL_SIZE + (CELL_SIZE - duckling.sprite.width)/2 - camera.x;
+			duckling.sprite.y = origin_y + duckling.y * CELL_SIZE + (CELL_SIZE - duckling.sprite.height) - camera.y;
 		}
 	}
 	
