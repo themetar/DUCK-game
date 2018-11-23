@@ -41,6 +41,12 @@ class SnakeingGame extends Game {
 	private	var origin_y:Float;
 	
 	private var ducklings:Array<Duckling>;
+	
+	private var spawn_countdown_timer:Int;
+	private var spawn_timeout:Int;
+	
+	private var collectable_ducklings:Array<Duckling>;
+	
 
 	public function new() {
 		super();
@@ -82,6 +88,11 @@ class SnakeingGame extends Game {
 			
 			addChild(duckling.sprite);
 		}
+		
+		spawn_timeout = 2000; // 2 sec.
+		spawn_countdown_timer = spawn_timeout;
+		
+		collectable_ducklings = [];
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -135,9 +146,26 @@ class SnakeingGame extends Game {
 			}
 			
 			// check collisions
-			// TODO
+			
 			var out_of_bounds = _target_x < 0 || _target_x >= GRID_WIDTH || _target_y < 0 || _target_y >= GRID_HEIGHT;
 			var hit_snake = [for (i in 1...(ducklings.length - 1)) ducklings[i]].exists(function (duckling) { return duckling.target_x == _target_x && duckling.target_y == _target_y; });
+			var was_duckling_added = false;
+			
+			if (hit_snake || out_of_bounds) {
+				trace("INJURY");
+				// TODO
+			} else {
+				var foundling = collectable_ducklings.find(function (duckling) return duckling.x == _target_x && duckling.y == _target_y );
+				was_duckling_added = foundling != null;
+				if (was_duckling_added) {
+					foundling.x = foundling.target_x = duck.target_x; // current, before update
+					foundling.y = foundling.target_y = duck.target_y;
+					
+					collectable_ducklings.remove(foundling);
+				
+					ducklings.insert(1, foundling);
+				}
+			}
 			
 			
 			// 'snap' exactly to target - all ducks
@@ -148,20 +176,26 @@ class SnakeingGame extends Game {
 				duckling.y = duckling.target_y;				
 			}
 			
-			// just ducklings, last to first
-			// inherit new target
-			// calc new direction (speed_x, speed_y)
+			
+			if (!was_duckling_added){
+				// just ducklings, last to first
+				// inherit new target
+				// calc new direction (speed_x, speed_y)
+				for (i in 1...ducklings.length) {
+					var duckling = ducklings[ducklings.length - i];	
+					var predecessor = ducklings[ducklings.length - i - 1];
+					
+					duckling.target_x = predecessor.target_x;
+					duckling.target_y = predecessor.target_y;					
+				}
+			}
+			
+			// calc speed for trailing ducklings
 			for (i in 1...ducklings.length) {
-				var duckling = ducklings[ducklings.length - i];	
-				var predecessor = ducklings[ducklings.length - i - 1];
-				
-				duckling.target_x = predecessor.target_x;
-				duckling.target_y = predecessor.target_y;
-				
+				var duckling = ducklings[ducklings.length - i];
 				duckling.speed_x = walk_speed * (duckling.target_x - duckling.x);
 				duckling.speed_y = walk_speed * (duckling.target_y - duckling.y);
-			}	
-			
+			}
 			
 			
 			// apply head duck new target
@@ -183,6 +217,32 @@ class SnakeingGame extends Game {
 				duckling.x += duckling.speed_x * millisec_delta;
 				duckling.y += duckling.speed_y * millisec_delta;
 			}
+		}
+		
+		// spawn collectable ducklings
+		spawn_countdown_timer -= delta_time;
+		if (spawn_countdown_timer <= 0){
+			spawn_countdown_timer += spawn_timeout;
+			
+			// spawn
+			var empties_XY = [for (x in 0...GRID_WIDTH) for (y in 0...GRID_HEIGHT) {x: x, y: y}];
+			var empty_count = empties_XY.length;
+			for (duc in ducklings) {
+				var i = Std.int(duc.target_x * GRID_HEIGHT + duck.target_y);
+				var tmp = empties_XY[i];
+				empties_XY[i] = empties_XY[empty_count - 1];
+				empties_XY[empty_count - 1] = tmp;
+				
+				empty_count -= 1;
+			}
+			
+			var spawn_cell = empties_XY[Std.int(Math.random() * empty_count)];
+			
+			var new_duckling = new Duckling();
+			new_duckling.x = spawn_cell.x;
+			new_duckling.y = spawn_cell.y;
+			
+			collectable_ducklings.push(new_duckling);
 		}
 		
 	}
@@ -210,6 +270,17 @@ class SnakeingGame extends Game {
 		for (duckling in ducklings) {
 			duckling.sprite.x = origin_x + duckling.x * CELL_SIZE + (CELL_SIZE - duckling.sprite.width)/2 - camera.x;
 			duckling.sprite.y = origin_y + duckling.y * CELL_SIZE + (CELL_SIZE - duckling.sprite.height) - camera.y;
+		}
+		
+		// collecatable
+		for (spawn in collectable_ducklings) {
+			if (spawn.sprite == null){
+				spawn.sprite = Assets.getMovieClip("graphics:duckling");
+				addChild(spawn.sprite);
+				
+				spawn.sprite.x = origin_x + spawn.x * CELL_SIZE + (CELL_SIZE - spawn.sprite.width)/2 - camera.x;
+				spawn.sprite.y = origin_y + spawn.y * CELL_SIZE + (CELL_SIZE - spawn.sprite.height) - camera.y;
+			}
 		}
 	}
 	
