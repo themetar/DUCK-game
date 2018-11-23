@@ -226,9 +226,10 @@ class SnakeingGame extends Game {
 			
 			// spawn
 			var empties_XY = [for (x in 0...GRID_WIDTH) for (y in 0...GRID_HEIGHT) {x: x, y: y}];
+			
 			var empty_count = empties_XY.length;
-			for (duc in ducklings) {
-				var i = Std.int(duc.target_x * GRID_HEIGHT + duck.target_y);
+			for (duc in ducklings.concat(collectable_ducklings)) {
+				var i = Std.int(duc.target_x * GRID_HEIGHT + duc.target_y);
 				var tmp = empties_XY[i];
 				empties_XY[i] = empties_XY[empty_count - 1];
 				empties_XY[empty_count - 1] = tmp;
@@ -236,11 +237,13 @@ class SnakeingGame extends Game {
 				empty_count -= 1;
 			}
 			
+			trace("empty_count", empty_count);
+			
 			var spawn_cell = empties_XY[Std.int(Math.random() * empty_count)];
 			
 			var new_duckling = new Duckling();
-			new_duckling.x = spawn_cell.x;
-			new_duckling.y = spawn_cell.y;
+			new_duckling.x = new_duckling.target_x = spawn_cell.x;
+			new_duckling.y = new_duckling.target_y = spawn_cell.y;
 			
 			collectable_ducklings.push(new_duckling);
 		}
