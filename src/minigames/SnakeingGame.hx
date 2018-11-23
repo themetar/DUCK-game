@@ -7,6 +7,8 @@ import openfl.Assets;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
 
+using Lambda;
+
 /**
  * ...
  * @author Dimitar
@@ -93,6 +95,51 @@ class SnakeingGame extends Game {
 		
 		if (reached_target) {
 			
+			// proccess user input, if any
+			// new direction from controls
+			if (input_direction != None && duck_direction != input_direction && input_direction != opositeDirection(duck_direction)) {
+				// direction changed
+				
+				duck_direction = input_direction;
+				input_direction = None;
+			}
+			
+			// set new speed
+			switch (duck_direction) {
+				case Left:						
+					duck.speed_x =-walk_speed;
+					duck.speed_y =  0;
+				case Right:						
+					duck.speed_x = walk_speed;
+					duck.speed_y = 0;
+				case Up:						
+					duck.speed_x = 0;
+					duck.speed_y = -walk_speed;
+				case Down:						
+					duck.speed_x = 0;
+					duck.speed_y = walk_speed;
+				case None:
+					throw "Error";
+			}
+			
+			// new target
+			var _target_x = duck.target_x;
+			var _target_y = duck.target_y;
+			switch (duck_direction) {
+				case Left: _target_x -= 1;
+				case Right: _target_x += 1;
+				case Up: _target_y -= 1;
+				case Down: _target_y += 1;
+				case None:
+					throw "Error";
+			}
+			
+			// check collisions
+			// TODO
+			var out_of_bounds = _target_x < 0 || _target_x >= GRID_WIDTH || _target_y < 0 || _target_y >= GRID_HEIGHT;
+			var hit_snake = [for (i in 1...(ducklings.length - 1)) ducklings[i]].exists(function (duckling) { return duckling.target_x == _target_x && duckling.target_y == _target_y; });
+			
+			
 			// 'snap' exactly to target - all ducks
 			for (i in 0...ducklings.length) {
 				var duckling = ducklings[i];				
@@ -113,47 +160,13 @@ class SnakeingGame extends Game {
 				
 				duckling.speed_x = walk_speed * (duckling.target_x - duckling.x);
 				duckling.speed_y = walk_speed * (duckling.target_y - duckling.y);
-			}
+			}	
 			
-			// manage head duck
-			// new direction from controls
-			if (input_direction != None && duck_direction != input_direction && input_direction != opositeDirection(duck_direction)) {
-				// direction changed
-				
-				duck_direction = input_direction;
-				input_direction = None;
-				
-				// set new speed
-				switch (duck_direction) {
-					case Left:						
-						duck.speed_x =-walk_speed;
-						duck.speed_y =  0;
-					case Right:						
-						duck.speed_x = walk_speed;
-						duck.speed_y = 0;
-					case Up:						
-						duck.speed_x = 0;
-						duck.speed_y = -walk_speed;
-					case Down:						
-						duck.speed_x = 0;
-						duck.speed_y = walk_speed;
-					case None:
-						throw "Error";
-				}
-			}
 			
-			// new target
-			switch (duck_direction) {
-				case Left: duck.target_x -= 1;
-				case Right: duck.target_x += 1;
-				case Up: duck.target_y -= 1;
-				case Down: duck.target_y += 1;
-				case None:
-					throw "Error";
-			}
 			
-			// check collisions
-			// TODO
+			// apply head duck new target
+			duck.target_x = _target_x;
+			duck.target_y = _target_y;
 			
 			// apply complete movement
 			var complete = traverse - remaining_distance;
