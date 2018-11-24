@@ -207,8 +207,8 @@ class SnakeingGame extends Game {
 			for (i in 0...ducklings.length) {
 				var duckling = ducklings[i];
 				
-				duckling.x += complete * Std.int(duckling.speed_x / duckling.speed_x);
-				duckling.y += complete * Std.int(duckling.speed_y / duckling.speed_y);
+				duckling.x += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_x / duckling.speed_x);
+				duckling.y += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_y / duckling.speed_y);
 			}
 			
 		} else {
