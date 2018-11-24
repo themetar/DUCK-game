@@ -93,6 +93,14 @@ class SnakeingGame extends Game {
 		spawn_countdown_timer = spawn_timeout;
 		
 		collectable_ducklings = [];
+		
+		// draw grid
+		graphics.clear();
+		graphics.lineStyle(1, 0xffffff);
+		for (r in 0...GRID_HEIGHT)
+			for (c in 0...GRID_WIDTH) {
+				graphics.drawRect(origin_x + c * CELL_SIZE, origin_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+			}
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -205,7 +213,7 @@ class SnakeingGame extends Game {
 				duckling.speed_y = walk_speed * (duckling.target_y - duckling.y);
 			}
 			
-			/*if (!injured && !was_duckling_added){
+			
 				
 				
 				// apply complete movement
@@ -216,7 +224,7 @@ class SnakeingGame extends Game {
 					duckling.x += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_x / duckling.speed_x);
 					duckling.y += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_y / duckling.speed_y);
 				}
-			}*/
+			
 			
 		} else {
 			for (i in 0...ducklings.length) {
@@ -269,13 +277,6 @@ class SnakeingGame extends Game {
 	
 	override function render(delta_time:Int):Void {
 		super.render(delta_time);
-		
-		graphics.clear();
-		graphics.lineStyle(1, 0xffffff);
-		for (r in 0...GRID_HEIGHT)
-			for (c in 0...GRID_WIDTH) {
-				graphics.drawRect(origin_x + c * CELL_SIZE, origin_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-			}
 		
 		for (duckling in ducklings) {
 			duckling.sprite.x = origin_x + duckling.x * CELL_SIZE + (CELL_SIZE - duckling.sprite.width)/2 - camera.x;
