@@ -149,17 +149,14 @@ class SnakeingGame extends Game {
 			
 			var out_of_bounds = _target_x < 0 || _target_x >= GRID_WIDTH || _target_y < 0 || _target_y >= GRID_HEIGHT;
 			var hit_snake = [for (i in 1...(ducklings.length - 1)) ducklings[i]].exists(function (duckling) { return duckling.target_x == _target_x && duckling.target_y == _target_y; });
+			var injured = hit_snake || out_of_bounds;
 			var was_duckling_added = false;
 			
-			if (hit_snake || out_of_bounds) {
-				trace("INJURY");
-				// TODO
-			} else {
+			if (!injured) {
 				var foundling = collectable_ducklings.find(function (duckling) return duckling.x == _target_x && duckling.y == _target_y );
-				was_duckling_added = foundling != null;
+				was_duckling_added = (foundling != null);
 				if (was_duckling_added) {
-					foundling.x = foundling.target_x = duck.target_x; // current, before update
-					foundling.y = foundling.target_y = duck.target_y;
+					foundling.setNewTarget(duck.target_x, duck.target_y);// current, before update
 					
 					collectable_ducklings.remove(foundling);
 				
@@ -177,37 +174,49 @@ class SnakeingGame extends Game {
 			}
 			
 			
-			if (!was_duckling_added){
+			if (!(was_duckling_added || injured)){
 				// just ducklings, last to first
 				// inherit new target
-				// calc new direction (speed_x, speed_y)
 				for (i in 1...ducklings.length) {
 					var duckling = ducklings[ducklings.length - i];	
 					var predecessor = ducklings[ducklings.length - i - 1];
 					
 					duckling.setNewTarget(predecessor.target_x, predecessor.target_y);					
 				}
+			} else if (injured) {
+				// all ducklings
+				// go back one block, i.e. get last previous target
+				for (i in 0...ducklings.length) {
+					var duckling = ducklings[i];	
+					duckling.rewindTaget();			
+				}
 			}
 			
-			// calc speed for trailing ducklings
-			for (i in 1...ducklings.length) {
-				var duckling = ducklings[ducklings.length - i];
+			if (!injured) {
+				// apply head duck new target
+				duck.setNewTarget(_target_x, _target_y);
+			}			
+			
+			
+			// calc speed for all ducklings
+			for (i in 0...ducklings.length) {
+				var duckling = ducklings[i];
 				duckling.speed_x = walk_speed * (duckling.target_x - duckling.x);
 				duckling.speed_y = walk_speed * (duckling.target_y - duckling.y);
 			}
 			
-			
-			// apply head duck new target
-			duck.setNewTarget(_target_x, _target_y);
-			
-			// apply complete movement
-			var complete = traverse - remaining_distance;
-			for (i in 0...ducklings.length) {
-				var duckling = ducklings[i];
+			/*if (!injured && !was_duckling_added){
 				
-				duckling.x += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_x / duckling.speed_x);
-				duckling.y += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_y / duckling.speed_y);
-			}
+				
+				// apply complete movement
+				var complete = traverse - remaining_distance;
+				for (i in 0...ducklings.length) {
+					var duckling = ducklings[i];
+					
+					duckling.x += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_x / duckling.speed_x);
+					duckling.y += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_y / duckling.speed_y);
+				}
+			}*/
 			
 		} else {
 			for (i in 0...ducklings.length) {
