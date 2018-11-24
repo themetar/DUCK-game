@@ -185,8 +185,7 @@ class SnakeingGame extends Game {
 					var duckling = ducklings[ducklings.length - i];	
 					var predecessor = ducklings[ducklings.length - i - 1];
 					
-					duckling.target_x = predecessor.target_x;
-					duckling.target_y = predecessor.target_y;					
+					duckling.setNewTarget(predecessor.target_x, predecessor.target_y);					
 				}
 			}
 			
@@ -199,8 +198,7 @@ class SnakeingGame extends Game {
 			
 			
 			// apply head duck new target
-			duck.target_x = _target_x;
-			duck.target_y = _target_y;
+			duck.setNewTarget(_target_x, _target_y);
 			
 			// apply complete movement
 			var complete = traverse - remaining_distance;
