@@ -1,6 +1,7 @@
 package minigames;
 
 import minigames.core.Game;
+import minigames.core.NPC;
 import openfl.Assets;
 import openfl.display.MovieClip;
 import openfl.events.KeyboardEvent;
@@ -29,6 +30,8 @@ class EvadingGame extends Game {
 	private static var X_SPEED:Float = 300;
 	
 	private var left_right_down:Map<Int, Bool>;
+	
+	private var crosshair:NPC;
 
 	public function new() {
 		super();
@@ -41,6 +44,10 @@ class EvadingGame extends Game {
 		addChild(the_duck.sprite);
 		
 		left_right_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
+		
+		crosshair = new NPC();
+		crosshair.sprite = Assets.getMovieClip("graphics:crosshair");
+		addChildAt(crosshair.sprite, 0);
 	}
 	
 	override function update(delta_time:Int):Void {
