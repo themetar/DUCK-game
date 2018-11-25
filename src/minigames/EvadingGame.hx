@@ -32,6 +32,12 @@ class EvadingGame extends Game {
 	private var left_right_down:Map<Int, Bool>;
 	
 	private var crosshair:NPC;
+	
+	private var follow_acc_scalar:Float = 200;
+	
+	private var cross_velocity:XYVector = {x:0, y:0};
+	private var cross_acc:XYVector;
+	private var change_timeout:Int;
 
 	public function new() {
 		super();
@@ -48,6 +54,12 @@ class EvadingGame extends Game {
 		crosshair = new NPC();
 		crosshair.sprite = Assets.getMovieClip("graphics:crosshair");
 		addChildAt(crosshair.sprite, 0);
+		
+		var cross_target_x = camera.width/4 + Math.random() * camera.width/2;
+		var cross_target_y = camera.height/4 + Math.random() * camera.height/2;
+		var angle = Math.atan2(cross_target_y - crosshair.y, cross_target_x - crosshair.x);
+		cross_acc = {x: follow_acc_scalar * Math.cos(angle), y: follow_acc_scalar * Math.sin(angle)};
+		change_timeout = 1000;
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -73,6 +85,23 @@ class EvadingGame extends Game {
 		}
 		
 		the_duck.position.x = Math.max(0, Math.min(the_duck.position.x, camera.width - 50)); // hardcoded duck sprite width
+		
+		// crosshair
+		crosshair.x += cross_velocity.x * seconds_time + cross_acc.x / 2 * seconds_time * seconds_time;
+		crosshair.y += cross_velocity.y * seconds_time + cross_acc.y / 2 * seconds_time * seconds_time;
+		cross_velocity.x += cross_acc.x * seconds_time;
+		cross_velocity.y += cross_acc.y * seconds_time;
+		
+		change_timeout -= delta_time;
+		if (change_timeout < 0 || !camera.contains(crosshair.x, crosshair.y)){
+			var cross_target_x = Math.random() * camera.width;
+			var cross_target_y = Math.random() * camera.height;
+			var angle = Math.atan2(cross_target_y - crosshair.y, cross_target_x - crosshair.x);
+			cross_acc = {x: follow_acc_scalar * Math.cos(angle), y: follow_acc_scalar * Math.sin(angle)};
+			cross_velocity.x = -cross_velocity.x / 2; // cross_velocity = {x:0, y:0};
+			cross_velocity.y = -cross_velocity.y / 2;
+			change_timeout = 1000;			
+		}
 	}
 	
 	override function render(delta_time:Int):Void {
@@ -80,6 +109,9 @@ class EvadingGame extends Game {
 		
 		the_duck.sprite.x = the_duck.position.x - camera.x;
 		the_duck.sprite.y = the_duck.position.y - camera.y;
+		
+		crosshair.sprite.x = crosshair.x - 40 - camera.x;
+		crosshair.sprite.y = crosshair.y - 40 - camera.y;
 	}
 	
 	override function handleKeyboardEvent(event:KeyboardEvent):Void {
