@@ -24,7 +24,11 @@ class EvadingGame extends Game {
 	
 	private var gravity:Float = 900;
 	
+	private var lift:Float = -400;
+	
 	private static var X_SPEED:Float = 300;
+	
+	private var left_right_down:Map<Int, Bool>;
 
 	public function new() {
 		super();
@@ -35,6 +39,8 @@ class EvadingGame extends Game {
 			sprite: Assets.getMovieClip("graphics:duck")
 		};
 		addChild(the_duck.sprite);
+		
+		left_right_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -42,8 +48,13 @@ class EvadingGame extends Game {
 		
 		var seconds_time = delta_time / 1000;
 		
-		the_duck.position.y += the_duck.velocity.y * seconds_time + gravity / 2 * seconds_time * seconds_time;
-		the_duck.velocity.y += gravity * seconds_time;
+		// controls
+		the_duck.velocity.x = left_right_down.get(Keyboard.LEFT) ? -X_SPEED : left_right_down.get(Keyboard.RIGHT) ? X_SPEED : 0;
+		
+		var y_acceleration = gravity + (left_right_down.get(Keyboard.LEFT) || left_right_down.get(Keyboard.RIGHT) ? lift : 0);
+		
+		the_duck.position.y += the_duck.velocity.y * seconds_time + y_acceleration / 2 * seconds_time * seconds_time;
+		the_duck.velocity.y += y_acceleration * seconds_time;
 		
 		the_duck.position.x += the_duck.velocity.x * seconds_time;
 		
@@ -67,15 +78,12 @@ class EvadingGame extends Game {
 	override function handleKeyboardEvent(event:KeyboardEvent):Void {
 		super.handleKeyboardEvent(event);
 		
-		if (event.type == KeyboardEvent.KEY_DOWN){
-			switch (event.keyCode) {
-				case Keyboard.SPACE:
-					the_duck.velocity.y += -600; // up
-				case Keyboard.LEFT:
-					the_duck.velocity.x = -X_SPEED;
-				case Keyboard.RIGHT:
-					the_duck.velocity.x = X_SPEED;
-			}
+		if (event.keyCode == Keyboard.SPACE && event.type == KeyboardEvent.KEY_DOWN){
+			the_duck.velocity.y += -600; // up
+		}
+		
+		if (event.keyCode == Keyboard.LEFT || event.keyCode == Keyboard.RIGHT){
+			left_right_down.set(event.keyCode, event.type == KeyboardEvent.KEY_DOWN);
 		}
 	}
 	
