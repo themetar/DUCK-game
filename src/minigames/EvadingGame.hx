@@ -1,6 +1,7 @@
 package minigames;
 
 import minigames.core.Game;
+import minigames.core.GameEvent;
 import minigames.core.NPC;
 import openfl.Assets;
 import openfl.display.MovieClip;
@@ -31,11 +32,16 @@ class EvadingGame extends Game {
 	
 	private var left_right_down:Map<Int, Bool>;
 	
-	private var crosshair:NPC;
+	private var flap_countdown:Int = 0;
+	private static var FLAP_TIMEOUT:Int = 300;
+	
+	private var crosshair_array:Array<NPC>;
 	
 	private var follow_speed:Float = 300;
 	
-	private var cross_velocity:XYVector = {x:0, y:0};
+	private var cross_velocities:Array<XYVector>;
+	
+	private static var CROSS_RADIUS:Float = 35;
 
 	public function new() {
 		super();
@@ -49,14 +55,14 @@ class EvadingGame extends Game {
 		
 		left_right_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
 		
-		crosshair = new NPC();
-		crosshair.sprite = Assets.getMovieClip("graphics:crosshair");
-		addChildAt(crosshair.sprite, 0);
+		crosshair_array = [new NPC()];
+		crosshair_array[0].sprite = Assets.getMovieClip("graphics:crosshair");
+		addChildAt(crosshair_array[0].sprite, 0);
 		
 		var cross_target_x = the_duck.position.x + 50 / 2; // hardcoded duck graphic width
 		var cross_target_y = the_duck.position.x + 50 / 2;
-		var angle = Math.atan2(cross_target_y - crosshair.y, cross_target_x - crosshair.x);
-		cross_velocity = {x: follow_speed * Math.cos(angle), y: follow_speed * Math.sin(angle)};
+		var angle = Math.atan2(cross_target_y - crosshair_array[0].y, cross_target_x - crosshair_array[0].x);
+		cross_velocities = [{x: follow_speed * Math.cos(angle), y: follow_speed * Math.sin(angle)}];
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -83,19 +89,36 @@ class EvadingGame extends Game {
 		
 		the_duck.position.x = Math.max(0, Math.min(the_duck.position.x, camera.width - 50)); // hardcoded duck sprite width
 		
-		// crosshair
-		var cross_hair_delta_x = cross_velocity.x * seconds_time;
-		var cross_hair_delta_y = cross_velocity.y * seconds_time;
-		crosshair.x += cross_hair_delta_x;
-		crosshair.y += cross_hair_delta_y;
+		flap_countdown -= delta_time;
 		
-		if (!(0 < crosshair.x && crosshair.x < camera.width && 0 < crosshair.y && crosshair.y < camera.height)){
-			crosshair.x -= cross_hair_delta_x;
-			crosshair.y -= cross_hair_delta_y;
-			var cross_target_x = the_duck.position.x + 50 / 2; // hardcoded duck graphic width
-			var cross_target_y = the_duck.position.y + 50 / 2;
-			var angle = Math.atan2(cross_target_y - crosshair.y, cross_target_x - crosshair.x);
-			cross_velocity = {x: follow_speed * Math.cos(angle), y: follow_speed * Math.sin(angle)};			
+		// crosshair
+		for (i in 0...crosshair_array.length) {
+			var crosshair = crosshair_array[i];
+			var cross_velocity = cross_velocities[i];
+			var cross_hair_delta_x = cross_velocity.x * seconds_time;
+			var cross_hair_delta_y = cross_velocity.y * seconds_time;
+			crosshair.x += cross_hair_delta_x;
+			crosshair.y += cross_hair_delta_y;
+			
+			if (0 > crosshair.x || crosshair.x > camera.width || 0 > crosshair.y || crosshair.y > camera.height){
+				crosshair.x -= cross_hair_delta_x;
+				crosshair.y -= cross_hair_delta_y;
+				var cross_target_x = the_duck.position.x + 50 / 2; // hardcoded duck graphic width
+				var cross_target_y = the_duck.position.y + 50 / 2;
+				var angle = Math.atan2(cross_target_y - crosshair.y, cross_target_x - crosshair.x);
+				cross_velocity.x = follow_speed * Math.cos(angle);
+				cross_velocity.y = follow_speed * Math.sin(angle);			
+			}
+			
+			// hit
+			var distance = Math.sqrt(Math.pow(crosshair.x - the_duck.position.x + 50 / 2, 2) + Math.pow(crosshair.y - the_duck.position.y + 50 / 2, 2));
+			if (distance <= CROSS_RADIUS) {
+				// shot
+				dispatchEvent(new GameEvent(GameEvent.INJURY));
+			} else if (CROSS_RADIUS < distance && distance < CROSS_RADIUS + 20) {
+				// near miss, get points
+				dispatchEvent(new GameEvent(GameEvent.SCORE));
+			}
 		}
 	}
 	
@@ -105,15 +128,20 @@ class EvadingGame extends Game {
 		the_duck.sprite.x = the_duck.position.x - camera.x;
 		the_duck.sprite.y = the_duck.position.y - camera.y;
 		
-		crosshair.sprite.x = crosshair.x - 40 - camera.x;
-		crosshair.sprite.y = crosshair.y - 40 - camera.y;
+		for (crosshair in crosshair_array) {
+			crosshair.sprite.x = crosshair.x - 40 - camera.x;
+			crosshair.sprite.y = crosshair.y - 40 - camera.y;
+		}
 	}
 	
 	override function handleKeyboardEvent(event:KeyboardEvent):Void {
 		super.handleKeyboardEvent(event);
 		
 		if (event.keyCode == Keyboard.SPACE && event.type == KeyboardEvent.KEY_DOWN){
-			the_duck.velocity.y += -600; // up
+			if (flap_countdown < 0) {
+				the_duck.velocity.y += -600; // up
+				flap_countdown = FLAP_TIMEOUT;
+			}
 		}
 		
 		if (event.keyCode == Keyboard.LEFT || event.keyCode == Keyboard.RIGHT){
