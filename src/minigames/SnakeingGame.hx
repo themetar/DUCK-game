@@ -1,6 +1,7 @@
 package minigames;
 
 import minigames.core.Game;
+import minigames.core.GameEvent;
 import minigames.npcs.Duckling;
 import openfl.display.MovieClip;
 import openfl.Assets;
@@ -29,7 +30,7 @@ class SnakeingGame extends Game {
 	private var duck_direction:Direction;
 	private var input_direction:Direction;
 	
-	private static var WALK_SPEED_MIN:Float = 2;
+	private static var WALK_SPEED_MIN:Float = 3;
 	private static var WALK_SPEED_MAX:Float = 10;
 	
 	private static var GRID_WIDTH:Int = 13;
@@ -53,20 +54,6 @@ class SnakeingGame extends Game {
 		
 		duck = new Duckling();
 		
-		duck.x = Std.int(GRID_WIDTH / 2);
-		duck.y = Std.int(GRID_HEIGHT / 2);
-		
-		duck.target_x = duck.x;
-		duck.target_y = duck.y - 1;
-		
-		walk_speed = WALK_SPEED_MIN;
-		
-		duck.speed_x = 0;
-		duck.speed_y = -walk_speed;
-		
-		duck_direction = Up;
-		input_direction = None;
-		
 		origin_x = Std.int((camera.width - GRID_WIDTH * CELL_SIZE) / 2);
 		origin_y = Std.int((camera.height - GRID_HEIGHT * CELL_SIZE) / 2);
 		
@@ -75,24 +62,11 @@ class SnakeingGame extends Game {
 		
 		ducklings = [duck];
 		
-		for (i in 0...7) {
-			var duckling = new Duckling();
-			duckling.sprite = Assets.getMovieClip("graphics:duckling");
-			duckling.target_y = duck.target_y + i + 1;
-			duckling.target_x = duck.target_x;
-			duckling.speed_y = duck.speed_y;
-			duckling.x = duck.x;
-			duckling.y = duck.y + i +1;
-			
-			ducklings.push(duckling);
-			
-			addChild(duckling.sprite);
-		}
-		
 		spawn_timeout = 2000; // 2 sec.
-		spawn_countdown_timer = spawn_timeout;
 		
 		collectable_ducklings = [];
+		
+		reset();
 		
 		// draw grid
 		graphics.clear();
@@ -169,6 +143,7 @@ class SnakeingGame extends Game {
 					collectable_ducklings.remove(foundling);
 				
 					ducklings.insert(1, foundling);
+					
 				}
 			}
 			
@@ -216,15 +191,16 @@ class SnakeingGame extends Game {
 			
 				
 				
-				// apply complete movement
-				var complete = traverse - remaining_distance;
-				for (i in 0...ducklings.length) {
-					var duckling = ducklings[i];
-					
-					duckling.x += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_x / duckling.speed_x);
-					duckling.y += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_y / duckling.speed_y);
-				}
-			
+			// apply complete movement
+			var complete = traverse - remaining_distance;
+			for (i in 0...ducklings.length) {
+				var duckling = ducklings[i];
+				
+				duckling.x += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_x / duckling.speed_x);
+				duckling.y += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_y / duckling.speed_y);
+			}
+		
+			if (was_duckling_added) dispatchEvent(new GameEvent(GameEvent.SCORE));	
 			
 		} else {
 			for (i in 0...ducklings.length) {
@@ -314,6 +290,47 @@ class SnakeingGame extends Game {
 					None;
 			}
 		}
+	}
+	
+	override public function up_the_ante():Void {
+		super.up_the_ante();
+		
+		walk_speed = Math.max(WALK_SPEED_MIN, Math.min(walk_speed + 0.75, WALK_SPEED_MAX));
+	}
+	
+	override public function reset():Void {
+		super.reset();
+		
+		// initial values
+		duck.x = Std.int(GRID_WIDTH / 2);
+		duck.y = Std.int(GRID_HEIGHT / 2);
+		
+		duck.setNewTarget(duck.x, duck.y - 1);
+		
+		walk_speed = WALK_SPEED_MIN;
+		
+		duck.speed_x = 0;
+		duck.speed_y = -walk_speed;
+		
+		duck_direction = Up;
+		input_direction = None;
+		
+		// remove current ducklings from display
+		for (i in 1...ducklings.length) { // from 1 -> skip main duck
+			var duckling = ducklings[i];
+			if (duckling.sprite != null && duckling.sprite.parent != null) duckling.sprite.parent.removeChild(duckling.sprite);
+		}
+		
+		// reset ducklings snake
+		ducklings = [duck];
+		
+		// remove collectable ducklings from display
+		for (duckling in collectable_ducklings) if (duckling.sprite != null && duckling.sprite.parent != null) duckling.sprite.parent.removeChild(duckling.sprite);
+		collectable_ducklings = [];
+		
+		// reset spawn timer
+		spawn_countdown_timer = 0;		
+		
 	}
 	
 }
