@@ -200,7 +200,8 @@ class SnakeingGame extends Game {
 				duckling.y += Math.max(-1, Math.min(complete, 1)) * Std.int(duckling.speed_y / duckling.speed_y);
 			}
 		
-			if (was_duckling_added) dispatchEvent(new GameEvent(GameEvent.SCORE));	
+			if (was_duckling_added) dispatchEvent(new GameEvent(GameEvent.SCORE));
+			if (hit_snake) dispatchEvent(new GameEvent(GameEvent.INJURY));
 			
 		} else {
 			for (i in 0...ducklings.length) {
