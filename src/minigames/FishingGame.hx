@@ -21,7 +21,7 @@ class FishingGame extends Game {
 	private var duck_speed:Point;
 	private var is_diving:Bool;
 	
-	private static var SWIM_ACCELERATION:Float = 100;
+	private static var SWIM_ACCELERATION:Float = 200;
 	private static var RESISTANCE_COEFICIENT:Float = -0.4;
 	private static var DIVE_SPEED:Float = 800;
 	private static var BUOYANCY:Float = - 800;
@@ -30,8 +30,11 @@ class FishingGame extends Game {
 	
 	private var fishes:Array<NPC>;
 	private var spawn_timer:Int;
-	private static var SPAWN_TIMEOUT:Int = 1000;
-	private static var FISH_SPEED:Float = -100;
+	private var fish_speed:Float;
+	private var spawn_timeout:Int;
+	private static var SPAWN_TIMEOUT_BASELINE:Int = 1000;
+	private static var FISH_SPEED_MIN:Float = -100;
+	private static var FISH_SPEED_MAX:Float = -700;
 	
 
 	public function new() {
@@ -40,11 +43,10 @@ class FishingGame extends Game {
 		duck_graphic = Assets.getMovieClip ("graphics:duck");
 		addChild (duck_graphic);
 		
-		duck_speed = new Point(0, 0);
-		duck_position = new Point(0, 110);
-		
-		spawn_timer = 0;
 		fishes = new Array<NPC>();
+		
+		
+		reset();
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -85,12 +87,12 @@ class FishingGame extends Game {
 			fish.y = 200 + Math.random() * 300;
 			fishes.push(fish);
 			
-			spawn_timer = SPAWN_TIMEOUT;
+			spawn_timer = spawn_timeout;
 		}
 		spawn_timer -= delta_time;
 		
 		for (fish in fishes) {
-			fish.x += FISH_SPEED * millisec_delta;
+			fish.x += fish_speed * millisec_delta;
 		}
 		
 		// test collision
@@ -152,5 +154,36 @@ class FishingGame extends Game {
 			}
 		}
 		
+	}
+	
+	override public function up_the_ante():Void {
+		super.up_the_ante();
+		
+		fish_speed = Math.min(FISH_SPEED_MIN, Math.max(fish_speed - 50, FISH_SPEED_MAX));
+		
+		var q = (fish_speed - FISH_SPEED_MIN) / (FISH_SPEED_MAX - FISH_SPEED_MIN);
+		
+		if (q < 0.5) spawn_timeout = Std.int(SPAWN_TIMEOUT_BASELINE * (1 - q));
+	}
+	
+	override public function reset():Void {
+		super.reset();
+		
+		duck_speed = new Point(0, 0);
+		duck_position = new Point(camera.width / 2 - 50 / 2, 110);
+		
+		spawn_timer = spawn_timeout = SPAWN_TIMEOUT_BASELINE;
+		fish_speed = FISH_SPEED_MIN;
+		
+		// clear old fish from screen
+		for (fish in fishes) if (fish.sprite != null && fish.sprite.parent != null) fish.sprite.parent.removeChild(fish.sprite);
+		
+		// new fishes
+		fishes = [for (i in 0...8) {
+			var fish = new NPC();
+			fish.x = camera.width + fish_speed * spawn_timeout/1000 * i;
+			fish.y = 200 + Math.random() * 300;
+			fish;
+		}];
 	}
 }

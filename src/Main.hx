@@ -15,6 +15,7 @@ class Main extends Sprite {
 	
 	// just testing
 	var fishing_game:FishingGame;
+	var upped:Int = 0;
 	
 	var snakeing_game:SnakeingGame;
 	
@@ -26,15 +27,23 @@ class Main extends Sprite {
 		// Assets:
 		// openfl.Assets.getBitmapData("img/assetname.jpg");
 		
-		//fishing_game = new FishingGame();
-		//addChild(fishing_game);
-		//fishing_game.addEventListener(GameEvent.SCORE, function(event) {trace("SCORE!"); });
+		fishing_game = new FishingGame();
+		addChild(fishing_game);
+		fishing_game.addEventListener(GameEvent.SCORE, function(event) {
+			trace("SCORE!");
+			fishing_game.up_the_ante(); // testing purposes
+			upped += 1;
+			if (upped > 10) {
+				fishing_game.reset();
+				upped = 0;
+			}
+		});
 		
 		//snakeing_game = new SnakeingGame();
 		//addChild(snakeing_game);
 		
-		evading_game = new EvadingGame();
-		addChild(evading_game);
+		//evading_game = new EvadingGame();
+		//addChild(evading_game);
 	}
 
 }
