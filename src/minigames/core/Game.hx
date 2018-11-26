@@ -47,8 +47,20 @@ class Game extends Sprite {
 		});
 	}
 	
-	public function pause(val:Bool):Void{
-		paused = val;
+	public function pause():Void{
+		paused = true;
+	}
+	
+	public function resume():Void {
+		paused = false;
+	}
+	
+	public function up_the_ante():Void {
+		// implement in child classes
+	}
+	
+	public function reset():Void {
+		// implement in child classes
 	}
 	
 	private function onEnterFrame(event:Event):Void{
