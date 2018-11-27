@@ -65,6 +65,7 @@ class FishingGame extends Game {
 		// bump duck from borders
 		if (duck_position.x < 0 || duck_position.x > camera.width - 50) {
 			duck_speed.x = -duck_speed.x;
+			duck_position.x = duck_position.x < 0 ? 0 : camera.width - 50;
 		}
 		
 		// vertical - diving - motion

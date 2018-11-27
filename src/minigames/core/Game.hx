@@ -53,6 +53,7 @@ class Game extends Sprite {
 	
 	public function resume():Void {
 		paused = false;
+		time = Lib.getTimer();
 	}
 	
 	public function up_the_ante():Void {
