@@ -31,17 +31,23 @@ class Main extends Sprite {
 		//addChild(fishing_game);
 		
 		snakeing_game = new SnakeingGame();
-		addChild(snakeing_game);
+		//addChild(snakeing_game);
 		
-		//evading_game = new EvadingGame();
-		//addChild(evading_game);
+		evading_game = new EvadingGame();
+		evading_game.up_the_ante();
+		//evading_game.up_the_ante();
+		//evading_game.up_the_ante();
+		//evading_game.up_the_ante();
+		//evading_game.up_the_ante();
+		//evading_game.up_the_ante();
+		addChild(evading_game);
 		
-		snakeing_game.addEventListener(GameEvent.SCORE, function(event) {
+		evading_game.addEventListener(GameEvent.SCORE, function(event) {
 			trace("SCORE!");
-			event.target.up_the_ante(); // testing purposes
+			//event.target.up_the_ante(); // testing purposes
 			upped += 1;
 			if (upped > 10) {
-				event.target.reset();
+				//event.target.reset();
 				//event.target.pause();
 				upped = 0;
 			}
