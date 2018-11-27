@@ -35,7 +35,7 @@ class Main extends Sprite {
 		
 		evading_game = new EvadingGame();
 		evading_game.up_the_ante();
-		//evading_game.up_the_ante();
+		evading_game.up_the_ante();
 		//evading_game.up_the_ante();
 		//evading_game.up_the_ante();
 		//evading_game.up_the_ante();

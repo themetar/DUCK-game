@@ -159,7 +159,7 @@ class EvadingGame extends Game {
 		c.y = rand_y;
 		c.sprite = Assets.getMovieClip("graphics:crosshair");
 		crosshair_array.push(c);
-		addChild(c.sprite);
+		addChildAt(c.sprite, 0);
 		
 		var angle = Math.random() * 2 * Math.PI;
 		cross_velocities.push({x: follow_speed * Math.cos(angle), y: follow_speed * Math.sin(angle)});
