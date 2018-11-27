@@ -75,6 +75,7 @@ class Main extends Sprite {
 			current_game = (current_game + 1) % 3;
 			minigame = minigames_queue[current_game];
 			addChildAt(minigame, 0);
+			minigame.up_the_ante();
 			minigame.resume();
 			
 			switch_countdown = SLOT_PLAYTIME;
