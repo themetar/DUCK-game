@@ -7,6 +7,7 @@ import openfl.display.MovieClip;
 import openfl.Assets;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
+import openfl.geom.Point;
 
 using Lambda;
 
@@ -332,6 +333,10 @@ class SnakeingGame extends Game {
 		// reset spawn timer
 		spawn_countdown_timer = 0;		
 		
+	}
+	
+	override public function get_duck_position_on_camera():Point {
+		return new Point(origin_x + duck.x * CELL_SIZE + (CELL_SIZE - duck.sprite.width)/2 - camera.x, origin_y + duck.y * CELL_SIZE + (CELL_SIZE - duck.sprite.height) - camera.y);
 	}
 	
 }

@@ -6,6 +6,7 @@ import minigames.core.NPC;
 import openfl.Assets;
 import openfl.display.MovieClip;
 import openfl.events.KeyboardEvent;
+import openfl.geom.Point;
 import openfl.ui.Keyboard;
 
 /**
@@ -193,5 +194,9 @@ class EvadingGame extends Game {
 		
 		// reset keys
 		left_right_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
+	}
+	
+	override public function get_duck_position_on_camera():Point {
+		return new Point(the_duck.position.x - camera.x, the_duck.position.y - camera.y);
 	}
 }

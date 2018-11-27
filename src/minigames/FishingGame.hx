@@ -15,6 +15,7 @@ import openfl.ui.Keyboard;
  */
 class FishingGame extends Game {
 	
+	private var duck_position:Point;
 	private var duck_graphic:MovieClip;
 	
 	private var keys_down:Map<Int, Bool>;
@@ -196,5 +197,9 @@ class FishingGame extends Game {
 		
 		// reset keys
 		keys_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
+	}
+	
+	override public function get_duck_position_on_camera():Point {
+		return new Point(duck_position.x - camera.x, duck_position.y - camera.y);
 	}
 }

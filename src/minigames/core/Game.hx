@@ -15,7 +15,8 @@ import openfl.ui.Keyboard;
 class Game extends Sprite {
 	
 	public var camera:Rectangle;
-	public var duck_position:Point;
+	
+	public var duck_position_on_camera(get, null):Point;
 	
 	private var paused:Bool;
 	
@@ -38,6 +39,7 @@ class Game extends Sprite {
 			addEventListener(Event.ENTER_FRAME, onEnterFrame);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyboardEvent);
 			stage.addEventListener(KeyboardEvent.KEY_UP, onKeyboardEvent);
+			render(0); // draw, don't wait for next update (next ENTER_FRAME)
 		});
 		
 		addEventListener(Event.REMOVED_FROM_STAGE, function(event:Event) {
@@ -62,6 +64,10 @@ class Game extends Sprite {
 	
 	public function reset():Void {
 		// implement in child classes
+	}
+	
+	public function get_duck_position_on_camera():Point {
+		return new Point();
 	}
 	
 	private function onEnterFrame(event:Event):Void{
