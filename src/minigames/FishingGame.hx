@@ -17,7 +17,7 @@ class FishingGame extends Game {
 	
 	private var duck_graphic:MovieClip;
 	
-	private var keys_down:Map<Int, Bool> = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
+	private var keys_down:Map<Int, Bool>;
 	private var duck_speed:Point;
 	private var is_diving:Bool;
 	
@@ -186,5 +186,15 @@ class FishingGame extends Game {
 			fish.y = 200 + Math.random() * 300;
 			fish;
 		}];
+		
+		// reset keys
+		keys_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
+	}
+	
+	override public function resume():Void {
+		super.resume();
+		
+		// reset keys
+		keys_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
 	}
 }

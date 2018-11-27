@@ -58,7 +58,7 @@ class Main extends Sprite {
 		addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		
 		time_display = new TextField();
-		time_display.setTextFormat(new TextFormat(null, 20, 0xFFFFFF));
+		time_display.setTextFormat(new TextFormat(null, 30, 0xFFFFFF));
 		addChild(time_display);
 	}
 	

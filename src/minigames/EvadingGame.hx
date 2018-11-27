@@ -188,4 +188,10 @@ class EvadingGame extends Game {
 		cross_velocities = [{x: follow_speed * Math.cos(angle), y: follow_speed * Math.sin(angle)}];
 	}
 	
+	override public function resume():Void {
+		super.resume();
+		
+		// reset keys
+		left_right_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
+	}
 }
