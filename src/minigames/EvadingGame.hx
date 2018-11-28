@@ -168,12 +168,15 @@ class EvadingGame extends Game {
 		c.y = rand_y;
 		c.sprite = Assets.getMovieClip("graphics:crosshair");
 		crosshair_array.push(c);
-		addChildAt(c.sprite, 0);
+		addChildAt(c.sprite, 1);
 		
 		var angle = Math.random() * 2 * Math.PI;
 		cross_velocities.push({x: follow_speed * Math.cos(angle), y: follow_speed * Math.sin(angle)});
 		
 		follow_speed += 50;
+		
+		trace(crosshair_array.length);
+		trace(crosshair_array.map(function (item) {return [item.x, item.y]; } ));
 	}
 	
 	override public function reset():Void {
