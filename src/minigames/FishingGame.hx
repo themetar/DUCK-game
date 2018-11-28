@@ -5,6 +5,7 @@ import minigames.core.GameEvent;
 import minigames.core.NPC;
 import openfl.display.MovieClip;
 import openfl.Assets;
+import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.geom.Point;
 import openfl.ui.Keyboard;
@@ -37,6 +38,8 @@ class FishingGame extends Game {
 	private static var FISH_SPEED_MIN:Float = -100;
 	private static var FISH_SPEED_MAX:Float = -700;
 	
+	private var background:Sprite;
+	
 
 	public function new() {
 		super();
@@ -46,6 +49,8 @@ class FishingGame extends Game {
 		
 		fishes = new Array<NPC>();
 		
+		background = Assets.getMovieClip("graphics:fishing_background");
+		addChildAt(background, 0);
 		
 		reset();
 	}
@@ -138,6 +143,8 @@ class FishingGame extends Game {
 			if (!test) removeChild(f.sprite);
 			return test;	
 		});
+		
+		background.y = -camera.y;
 	}
 	
 	override function handleKeyboardEvent(event:KeyboardEvent):Void {

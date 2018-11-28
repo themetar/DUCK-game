@@ -5,6 +5,7 @@ import minigames.core.GameEvent;
 import minigames.core.NPC;
 import openfl.Assets;
 import openfl.display.MovieClip;
+import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.geom.Point;
 import openfl.ui.Keyboard;
@@ -44,6 +45,8 @@ class EvadingGame extends Game {
 	private var cross_velocities:Array<XYVector>;
 	
 	private static var CROSS_RADIUS:Float = 35;
+	
+	private var background:Sprite;
 
 	public function new() {
 		super();
@@ -58,6 +61,9 @@ class EvadingGame extends Game {
 		crosshair_array = [];
 		
 		reset();
+		
+		background = Assets.getMovieClip("graphics:evading_background");
+		addChildAt(background, 0);
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -130,6 +136,8 @@ class EvadingGame extends Game {
 			crosshair.sprite.x = crosshair.x - 40 - camera.x;
 			crosshair.sprite.y = crosshair.y - 40 - camera.y;
 		}
+		
+		background.y = -camera.y;
 	}
 	
 	override function handleKeyboardEvent(event:KeyboardEvent):Void {

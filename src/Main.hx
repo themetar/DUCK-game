@@ -64,7 +64,7 @@ class Main extends Sprite {
 		
 		time_display = new TextField();
 		time_display.setTextFormat(new TextFormat(null, 30, 0xFFFFFF));
-		//addChild(time_display);
+		addChild(time_display);
 		
 		mask_shape = new Mask(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 	}

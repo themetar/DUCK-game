@@ -5,6 +5,7 @@ import minigames.core.GameEvent;
 import minigames.npcs.Duckling;
 import openfl.display.MovieClip;
 import openfl.Assets;
+import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.ui.Keyboard;
 import openfl.geom.Point;
@@ -49,6 +50,8 @@ class SnakeingGame extends Game {
 	
 	private var collectable_ducklings:Array<Duckling>;
 	
+	private var back_green:Sprite;
+	
 
 	public function new() {
 		super();
@@ -76,6 +79,9 @@ class SnakeingGame extends Game {
 			for (c in 0...GRID_WIDTH) {
 				graphics.drawRect(origin_x + c * CELL_SIZE, origin_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 			}
+			
+		back_green = Assets.getMovieClip("graphics:green");
+		addChildAt(back_green, 0);
 	}
 	
 	override function update(delta_time:Int):Void {
