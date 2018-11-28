@@ -10,6 +10,7 @@ import openfl.events.Event;
 import openfl.Lib;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
+import openfl.text.TextFieldAutoSize;
 import motion.Actuate;
 import motion.easing.Linear;
 import util.Mask;
@@ -63,7 +64,9 @@ class Main extends Sprite {
 		addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		
 		time_display = new TextField();
-		time_display.setTextFormat(new TextFormat(null, 30, 0xFFFFFF));
+		time_display.setTextFormat(new TextFormat(null, 40, 0xFFFFFF));
+		time_display.x = Lib.current.stage.stageWidth / 2 - time_display.width / 2;
+		time_display.autoSize = TextFieldAutoSize.CENTER;
 		addChild(time_display);
 		
 		mask_shape = new Mask(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
@@ -106,9 +109,9 @@ class Main extends Sprite {
 			next_minigame.mask = mask_shape;
 			
 			
-			Actuate.tween(minigame.camera, 5, {x: -delta_x, y: -delta_y}).ease(Linear.easeNone);
-			Actuate.tween(next_minigame.camera, 5, {x:0, y: 0}).ease(Linear.easeNone);
-			Actuate.update(mask_shape.draw_mask, 5, [0], [1]).ease(Linear.easeNone).onComplete(function () {
+			Actuate.tween(minigame.camera, 1, {x: -delta_x, y: -delta_y}).ease(Linear.easeNone);
+			Actuate.tween(next_minigame.camera, 1, {x:0, y: 0}).ease(Linear.easeNone);
+			Actuate.update(mask_shape.draw_mask, 1, [0], [1]).ease(Linear.easeNone).onComplete(function () {
 				removeChild(minigame);
 				minigame.camera.x = minigame.camera.y = 0; // reset from previous transition 
 				next_minigame.resume();
