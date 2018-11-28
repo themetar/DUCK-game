@@ -36,7 +36,7 @@ class SnakeingGame extends Game {
 	private static var WALK_SPEED_MAX:Float = 10;
 	
 	private static var GRID_WIDTH:Int = 13;
-	private static var GRID_HEIGHT:Int = 12;
+	private static var GRID_HEIGHT:Int = 11;
 	
 	private static var CELL_SIZE:Int = 50;
 	
@@ -51,6 +51,7 @@ class SnakeingGame extends Game {
 	private var collectable_ducklings:Array<Duckling>;
 	
 	private var back_green:Sprite;
+	private var field:Sprite;
 	
 
 	public function new() {
@@ -73,15 +74,18 @@ class SnakeingGame extends Game {
 		reset();
 		
 		// draw grid
-		graphics.clear();
-		graphics.lineStyle(1, 0xffffff);
-		for (r in 0...GRID_HEIGHT)
-			for (c in 0...GRID_WIDTH) {
-				graphics.drawRect(origin_x + c * CELL_SIZE, origin_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-			}
+		//graphics.clear();
+		//graphics.lineStyle(1, 0xffffff);
+		//for (r in 0...GRID_HEIGHT)
+		//	for (c in 0...GRID_WIDTH) {
+		//		graphics.drawRect(origin_x + c * CELL_SIZE, origin_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+		//	}
 			
 		back_green = Assets.getMovieClip("graphics:green");
 		addChildAt(back_green, 0);
+		
+		field = Assets.getMovieClip("graphics:checkerfield");
+		addChildAt(field, 1);
 	}
 	
 	override function update(delta_time:Int):Void {
@@ -277,6 +281,9 @@ class SnakeingGame extends Game {
 			spawn.sprite.x = origin_x + spawn.x * CELL_SIZE + (CELL_SIZE - spawn.sprite.width)/2 - camera.x;
 			spawn.sprite.y = origin_y + spawn.y * CELL_SIZE + (CELL_SIZE - spawn.sprite.height) - camera.y;
 		}
+		
+		field.x = origin_x - camera.x;
+		field.y = origin_y - camera.y;
 	}
 	
 	override function handleKeyboardEvent(event:KeyboardEvent):Void {

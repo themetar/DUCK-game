@@ -108,7 +108,7 @@ class Main extends Sprite {
 			
 			Actuate.tween(minigame.camera, 5, {x: -delta_x, y: -delta_y}).ease(Linear.easeNone);
 			Actuate.tween(next_minigame.camera, 5, {x:0, y: 0}).ease(Linear.easeNone);
-			Actuate.update(mask_shape.draw_mask, 5, [0], [1]).onComplete(function () {
+			Actuate.update(mask_shape.draw_mask, 5, [0], [1]).ease(Linear.easeNone).onComplete(function () {
 				removeChild(minigame);
 				minigame.camera.x = minigame.camera.y = 0; // reset from previous transition 
 				next_minigame.resume();

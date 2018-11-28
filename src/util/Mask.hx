@@ -20,7 +20,6 @@ class Mask extends Shape {
 	}
 	
 	public function draw_mask(value:Float):Void{
-		trace(value);
 		graphics.clear();
 		graphics.beginFill(0xffff00);
 		graphics.drawRect((1 - value) * _width, 0, value * _width, _height);
