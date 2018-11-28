@@ -12,6 +12,7 @@ import openfl.text.TextField;
 import openfl.text.TextFormat;
 import motion.Actuate;
 import motion.easing.Linear;
+import util.Mask;
 
 /**
  * ...
@@ -32,6 +33,8 @@ class Main extends Sprite {
 	
 	private var switch_countdown:Int;
 	private static var SLOT_PLAYTIME:Int = 10000; // 10000 miliseconds = 10 seconds
+	
+	private var mask_shape:Mask;
 	
 	private var time:Int;
 	
@@ -61,7 +64,9 @@ class Main extends Sprite {
 		
 		time_display = new TextField();
 		time_display.setTextFormat(new TextFormat(null, 30, 0xFFFFFF));
-		addChild(time_display);
+		//addChild(time_display);
+		
+		mask_shape = new Mask(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 	}
 	
 	private function onEnterFrame(event:Event):Void{
@@ -93,17 +98,27 @@ class Main extends Sprite {
 			next_minigame.camera.y = delta_y;
 			
 			next_minigame.up_the_ante();
-			addChildAt(next_minigame, 0);
+			addChildAt(next_minigame, 1);
+			
+			
+			mask_shape.draw_mask(0);
+			addChildAt(mask_shape, 2);
+			next_minigame.mask = mask_shape;
 			
 			
 			Actuate.tween(minigame.camera, 5, {x: -delta_x, y: -delta_y}).ease(Linear.easeNone);
-			Actuate.tween(next_minigame.camera, 5, {x:0, y: 0}).ease(Linear.easeNone).onComplete(function () {
+			Actuate.tween(next_minigame.camera, 5, {x:0, y: 0}).ease(Linear.easeNone);
+			Actuate.update(mask_shape.draw_mask, 5, [0], [1]).onComplete(function () {
 				removeChild(minigame);
 				minigame.camera.x = minigame.camera.y = 0; // reset from previous transition 
 				next_minigame.resume();
 				time = Lib.getTimer();
 				switch_countdown = SLOT_PLAYTIME;
 				addEventListener(Event.ENTER_FRAME, onEnterFrame);
+				
+				removeChild(mask_shape);
+				next_minigame.mask = null;
+				addChildAt(next_minigame, 0);
 			});
 			
 			removeEventListener(Event.ENTER_FRAME, onEnterFrame);

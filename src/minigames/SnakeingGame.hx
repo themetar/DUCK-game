@@ -266,10 +266,10 @@ class SnakeingGame extends Game {
 			if (spawn.sprite == null){
 				spawn.sprite = Assets.getMovieClip("graphics:duckling");
 				addChild(spawn.sprite);
-				
-				spawn.sprite.x = origin_x + spawn.x * CELL_SIZE + (CELL_SIZE - spawn.sprite.width)/2 - camera.x;
-				spawn.sprite.y = origin_y + spawn.y * CELL_SIZE + (CELL_SIZE - spawn.sprite.height) - camera.y;
 			}
+			
+			spawn.sprite.x = origin_x + spawn.x * CELL_SIZE + (CELL_SIZE - spawn.sprite.width)/2 - camera.x;
+			spawn.sprite.y = origin_y + spawn.y * CELL_SIZE + (CELL_SIZE - spawn.sprite.height) - camera.y;
 		}
 	}
 	
