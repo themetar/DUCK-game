@@ -118,7 +118,7 @@ class FishingGame extends Game {
 		for (fish in fishes) {
 			if (duck_graphic.hitTestObject(fish.sprite)) {
 				fish.to_remove = true;
-				dispatchEvent(new GameEvent(GameEvent.SCORE));
+				dispatchEvent(new GameEvent(GameEvent.SCORE, fish.sprite.x, fish.sprite.y));
 			}
 		}
 	}

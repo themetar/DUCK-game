@@ -70,6 +70,10 @@ class Main extends Sprite {
 		addChild(time_display);
 		
 		mask_shape = new Mask(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
+		
+		fishing_game.addEventListener(GameEvent.SCORE, onScore);
+		snakeing_game.addEventListener(GameEvent.SCORE, onScore);
+		evading_game.addEventListener(GameEvent.SCORE, onScore);
 	}
 	
 	private function onEnterFrame(event:Event):Void{
@@ -137,6 +141,17 @@ class Main extends Sprite {
 		time_display.text = Math.round(switch_countdown / 1000);
 		
 		time = current_time;
+	}
+	
+	private function onScore(event:GameEvent):Void{
+		var text:TextField = new TextField();
+		text.text = "+10";
+		text.x = event.screen_x;
+		text.y = event.screen_y;
+		addChild(text);
+		Actuate.tween(text, 1, {alpha: 0, y: text.y - 50}).onComplete(function (){
+			removeChild(text);
+		});
 	}
 
 }
