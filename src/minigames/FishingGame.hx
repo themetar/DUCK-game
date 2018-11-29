@@ -3,7 +3,6 @@ package minigames;
 import minigames.core.Game;
 import minigames.core.GameEvent;
 import minigames.core.NPC;
-import openfl.display.MovieClip;
 import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
@@ -17,7 +16,7 @@ import openfl.ui.Keyboard;
 class FishingGame extends Game {
 	
 	private var duck_position:Point;
-	private var duck_graphic:MovieClip;
+	private var duck_graphic:Sprite;
 	
 	private var keys_down:Map<Int, Bool>;
 	private var duck_speed:Point;
@@ -40,11 +39,22 @@ class FishingGame extends Game {
 	
 	private var background:Sprite;
 	
+	private var duck_sprites:Map<String, Sprite>;
+	
+	private var orientation:String = "right";
+	
 
 	public function new() {
 		super();
 		
-		duck_graphic = Assets.getMovieClip ("graphics:duck");
+		duck_sprites = ["swim-left" => Assets.getMovieClip("graphics:duck_swim_left"),
+				"swim-right" => Assets.getMovieClip("graphics:duck_swim_right"),
+				"dive-down-left" => Assets.getMovieClip("graphics:duck_dive_down_left"),
+				"dive-up-left" => Assets.getMovieClip("graphics:duck_dive_up_left"),
+				"dive-down-right" => Assets.getMovieClip("graphics:duck_dive_down_right"),
+				"dive-up-right" => Assets.getMovieClip("graphics:duck_dive_up_right")];
+		
+		duck_graphic = duck_sprites.get("swim-right");
 		addChild (duck_graphic);
 		
 		fishes = new Array<NPC>();
@@ -67,6 +77,8 @@ class FishingGame extends Game {
 		duck_speed.x += (swim_acc + resistance_decceleration) * millisec_delta;
 		
 		duck_position.x += duck_speed.x * millisec_delta + (swim_acc + resistance_decceleration) / 2 * millisec_delta * millisec_delta;
+		
+		orientation = keys_down.get(Keyboard.RIGHT) ? "right" : keys_down.get(Keyboard.LEFT) ? "left" : orientation;
 		
 		// bump duck from borders
 		if (duck_position.x < 0 || duck_position.x > camera.width - 50) {
@@ -114,17 +126,33 @@ class FishingGame extends Game {
 	override function render(delta_time:Int):Void {
 		super.render(delta_time);
 		
-		graphics.clear();
-		graphics.lineStyle(1, 0xffffff);
+		var sprite = if (orientation == "left") {
+			if (is_diving) {
+				if (duck_speed.y < 0) {
+					duck_sprites.get("dive-up-left");
+				} else {
+					duck_sprites.get("dive-down-left");
+				}
+			} else {
+				duck_sprites.get("swim-left");
+			}
+		} else {
+			if (is_diving) {
+				if (duck_speed.y < 0) {
+					duck_sprites.get("dive-up-right");
+				} else {
+					duck_sprites.get("dive-down-right");
+				}
+			} else {
+				duck_sprites.get("swim-right");
+			}
+		}
 		
-		graphics.moveTo(0, WATER_SURFACE_Y - camera.y);
-		graphics.lineTo(camera.width, WATER_SURFACE_Y - camera.y);
-		
-		graphics.moveTo(0 - camera.x, 0); // left border
-		graphics.lineTo(0 - camera.x, camera.height);
-		
-		graphics.moveTo(camera.width - camera.x, 0); // right border
-		graphics.lineTo(camera.width - camera.x, camera.height);
+		if (sprite != duck_graphic) {
+			addChildAt(sprite, 1);
+			removeChild(duck_graphic);
+			duck_graphic = sprite;
+		}
 		
 		duck_graphic.x = duck_position.x - camera.x;
 		duck_graphic.y = duck_position.y - camera.y;
@@ -197,6 +225,8 @@ class FishingGame extends Game {
 		
 		// reset keys
 		keys_down = [Keyboard.LEFT => false, Keyboard.RIGHT => false];
+		
+		orientation = "right";
 	}
 	
 	override public function resume():Void {

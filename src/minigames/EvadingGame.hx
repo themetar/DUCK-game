@@ -19,7 +19,7 @@ typedef XYVector = {x:Float, y:Float}
 typedef Duck = {
 	 position:XYVector,
 	 velocity: XYVector,
-	 sprite: MovieClip
+	 sprite: Sprite
 }
 
 class EvadingGame extends Game {
@@ -47,14 +47,23 @@ class EvadingGame extends Game {
 	private static var CROSS_RADIUS:Float = 35;
 	
 	private var background:Sprite;
+	
+	private var duck_sprites:Map<String, Sprite>;
 
 	public function new() {
 		super();
 		
+		duck_sprites = ["swim-left" => Assets.getMovieClip("graphics:duck_swim_left"),
+				"swim-right" => Assets.getMovieClip("graphics:duck_swim_right"),
+				"dive-down-left" => Assets.getMovieClip("graphics:duck_dive_down_left"),
+				"dive-up-left" => Assets.getMovieClip("graphics:duck_dive_up_left"),
+				"dive-down-right" => Assets.getMovieClip("graphics:duck_dive_down_right"),
+				"dive-up-right" => Assets.getMovieClip("graphics:duck_dive_up_right")];
+		
 		the_duck = {
 			position: {x: camera.width / 2, y: camera.height / 2},
 			velocity: {x: X_SPEED, y: 0},
-			sprite: Assets.getMovieClip("graphics:duck")
+			sprite: duck_sprites.get("swim-right")
 		};
 		addChild(the_duck.sprite);
 		
