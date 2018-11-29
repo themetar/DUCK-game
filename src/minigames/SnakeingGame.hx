@@ -3,7 +3,6 @@ package minigames;
 import minigames.core.Game;
 import minigames.core.GameEvent;
 import minigames.npcs.Duckling;
-import openfl.display.MovieClip;
 import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
@@ -53,6 +52,8 @@ class SnakeingGame extends Game {
 	private var back_green:Sprite;
 	private var field:Sprite;
 	
+	private var duck_sprites:Map<Direction, Sprite>;
+	
 
 	public function new() {
 		super();
@@ -62,7 +63,12 @@ class SnakeingGame extends Game {
 		origin_x = Std.int((camera.width - GRID_WIDTH * CELL_SIZE) / 2);
 		origin_y = Std.int((camera.height - GRID_HEIGHT * CELL_SIZE) / 2);
 		
-		duck.sprite = Assets.getMovieClip ("graphics:duck");
+		duck_sprites = [Left => Assets.getMovieClip("graphics:duck_walking_left"),
+				Right => Assets.getMovieClip("graphics:duck_walking_right"),
+				Down => Assets.getMovieClip("graphics:duck_walking_down"),
+				Up => Assets.getMovieClip("graphics:duck_walking_up")];
+		
+		duck.sprite = duck_sprites.get(Up);
 		addChild (duck.sprite);
 		
 		ducklings = [duck];
@@ -72,14 +78,6 @@ class SnakeingGame extends Game {
 		collectable_ducklings = [];
 		
 		reset();
-		
-		// draw grid
-		//graphics.clear();
-		//graphics.lineStyle(1, 0xffffff);
-		//for (r in 0...GRID_HEIGHT)
-		//	for (c in 0...GRID_WIDTH) {
-		//		graphics.drawRect(origin_x + c * CELL_SIZE, origin_y + r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
-		//	}
 			
 		back_green = Assets.getMovieClip("graphics:green");
 		addChildAt(back_green, 0);
@@ -266,9 +264,21 @@ class SnakeingGame extends Game {
 	override function render(delta_time:Int):Void {
 		super.render(delta_time);
 		
-		for (duckling in ducklings) {
-			duckling.sprite.x = origin_x + duckling.x * CELL_SIZE + (CELL_SIZE - duckling.sprite.width)/2 - camera.x;
-			duckling.sprite.y = origin_y + duckling.y * CELL_SIZE + (CELL_SIZE - duckling.sprite.height) - camera.y;
+		var sprite = duck_sprites.get(duck_direction);
+		if (sprite != duck.sprite) {
+			addChildAt(sprite, 2);
+			removeChild(duck.sprite);
+			duck.sprite = sprite;
+		}
+		
+		duck.sprite.x = origin_x + duck.x * CELL_SIZE + (CELL_SIZE - 50)/2 - camera.x;
+		duck.sprite.y = origin_y + duck.y * CELL_SIZE + (CELL_SIZE - 50) - camera.y;
+		
+		
+		for (i in 1...ducklings.length) {
+			var duckling = ducklings[i];
+			duckling.sprite.x = origin_x + duckling.x * CELL_SIZE + (CELL_SIZE - 30)/2 - camera.x;
+			duckling.sprite.y = origin_y + duckling.y * CELL_SIZE + (CELL_SIZE - 30) - camera.y;
 		}
 		
 		// collecatable

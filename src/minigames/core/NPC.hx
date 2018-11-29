@@ -1,5 +1,5 @@
 package minigames.core;
-import openfl.display.MovieClip;
+import openfl.display.Sprite;
 
 /**
  * ...
@@ -10,7 +10,7 @@ class NPC {
 	public var x:Float;
 	public var y:Float;
 	
-	public var sprite:MovieClip;
+	public var sprite:Sprite;
 	
 	public var to_remove:Bool;
 
