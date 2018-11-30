@@ -21,19 +21,17 @@ import util.Mask;
  */
 class Main extends Sprite {
 	
-	// just testing
 	var fishing_game:FishingGame;
-	var upped:Int = 0;
-	
 	var snakeing_game:SnakeingGame;
-	
 	var evading_game:EvadingGame;
 	
 	var minigames_queue:Array<Game>;
 	var current_game:Int;
 	
+	var upped:Int;
+	
 	private var switch_countdown:Int;
-	private static var SLOT_PLAYTIME:Int = 10000; // 10000 miliseconds = 10 seconds
+	private static inline var SLOT_PLAYTIME:Int = 10000; // 10000 miliseconds = 10 seconds
 	
 	private var mask_shape:Mask;
 	
@@ -44,36 +42,40 @@ class Main extends Sprite {
 	public function new() {
 		super();
 		
+		// init
+		
 		fishing_game = new FishingGame();
-		
 		snakeing_game = new SnakeingGame();
-		//addChild(snakeing_game);
-		
 		evading_game = new EvadingGame();
-		//addChild(evading_game);
 		
-		minigames_queue = [fishing_game, snakeing_game, evading_game];
-		current_game = 0;
+		fishing_game.addEventListener(GameEvent.SCORE, onScore);
+		snakeing_game.addEventListener(GameEvent.SCORE, onScore);
+		evading_game.addEventListener(GameEvent.SCORE, onScore);
 		
-		addChild(minigames_queue[current_game]);
 		
-		switch_countdown = SLOT_PLAYTIME;
-		
-		time = Lib.getTimer();
-		
-		addEventListener(Event.ENTER_FRAME, onEnterFrame);
 		
 		time_display = new TextField();
 		time_display.setTextFormat(new TextFormat(null, 40, 0xFFFFFF));
 		time_display.x = Lib.current.stage.stageWidth / 2 - time_display.width / 2;
 		time_display.autoSize = TextFieldAutoSize.CENTER;
 		addChild(time_display);
-		
+				
 		mask_shape = new Mask(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 		
-		fishing_game.addEventListener(GameEvent.SCORE, onScore);
-		snakeing_game.addEventListener(GameEvent.SCORE, onScore);
-		evading_game.addEventListener(GameEvent.SCORE, onScore);
+		re_play();
+	}
+	
+	private function re_play():Void {
+		minigames_queue = [fishing_game, snakeing_game, evading_game];
+		current_game = 0;
+		upped = 0;
+		
+		addChildAt(minigames_queue[current_game], 0);
+		
+		switch_countdown = SLOT_PLAYTIME;
+		time = Lib.getTimer();
+		
+		addEventListener(Event.ENTER_FRAME, onEnterFrame);
 	}
 	
 	private function onEnterFrame(event:Event):Void{
@@ -129,13 +131,6 @@ class Main extends Sprite {
 			});
 			
 			removeEventListener(Event.ENTER_FRAME, onEnterFrame);
-			
-			
-			/*;
-			
-			minigame.resume();
-			
-			*/
 		}
 		
 		time_display.text = Std.string(Math.round(switch_countdown / 1000));
