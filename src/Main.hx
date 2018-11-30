@@ -48,6 +48,8 @@ class Main extends Sprite {
 	private var score:Int;
 	private var highscore:Int;
 	
+	private var mistake_sprite:Sprite;
+	
 	private var info_screen:Sprite;
 
 	public function new() {
@@ -62,6 +64,10 @@ class Main extends Sprite {
 		fishing_game.addEventListener(GameEvent.SCORE, onScore);
 		snakeing_game.addEventListener(GameEvent.SCORE, onScore);
 		evading_game.addEventListener(GameEvent.SCORE, onScore);
+		
+		fishing_game.addEventListener(GameEvent.INJURY, onInjury);
+		snakeing_game.addEventListener(GameEvent.INJURY, onInjury);
+		evading_game.addEventListener(GameEvent.INJURY, onInjury);
 		
 		time_display = new TextField();
 		time_display.setTextFormat(new TextFormat(null, 40, 0xFFFFFF));
@@ -90,6 +96,8 @@ class Main extends Sprite {
 		
 		highscore = 0;
 		highscore_display.text = Std.string(highscore);
+		
+		mistake_sprite = Assets.getMovieClip("graphics:MISTAKE");
 	}
 	
 	private function onSpaceKey(event:KeyboardEvent):Void{
@@ -111,7 +119,7 @@ class Main extends Sprite {
 			switch_countdown = SLOT_PLAYTIME;
 			time = Lib.getTimer();
 		
-			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			addEventListener(Event.ENTER_FRAME, countTimeOnEnterFrame);
 			
 			minigames_queue[current_game].resume();
 		});
@@ -120,7 +128,7 @@ class Main extends Sprite {
 		score_display.text = Std.string(score);
 	}
 	
-	private function onEnterFrame(event:Event):Void{
+	private function countTimeOnEnterFrame(event:Event):Void{
 		var current_time:Int = Lib.getTimer();
 		var delta:Int = current_time - time;
 		
@@ -165,14 +173,14 @@ class Main extends Sprite {
 				next_minigame.resume();
 				time = Lib.getTimer();
 				switch_countdown = SLOT_PLAYTIME;
-				addEventListener(Event.ENTER_FRAME, onEnterFrame);
+				addEventListener(Event.ENTER_FRAME, countTimeOnEnterFrame);
 				
 				removeChild(mask_shape);
 				next_minigame.mask = null;
 				addChildAt(next_minigame, 0);
 			});
 			
-			removeEventListener(Event.ENTER_FRAME, onEnterFrame);
+			removeEventListener(Event.ENTER_FRAME, countTimeOnEnterFrame);
 		}
 		
 		time_display.text = Std.string(Math.round(switch_countdown / 1000));
@@ -197,6 +205,17 @@ class Main extends Sprite {
 			highscore = score;
 			highscore_display.text = Std.string(highscore);
 		}
+	}
+	
+	private function onInjury(event:GameEvent) :Void {
+		var minigame = minigames_queue[current_game];
+		minigame.pause();
+		
+		mistake_sprite.x = minigame.duck_position_on_camera.x + 25;
+		mistake_sprite.y = minigame.duck_position_on_camera.y + 25;
+		addChild(mistake_sprite);
+		
+		removeEventListener(Event.ENTER_FRAME, countTimeOnEnterFrame);
 	}
 
 }

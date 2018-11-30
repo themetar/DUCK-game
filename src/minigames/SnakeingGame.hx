@@ -210,7 +210,7 @@ class SnakeingGame extends Game {
 			}
 		
 			if (was_duckling_added) dispatchEvent(new GameEvent(GameEvent.SCORE, duck.sprite.x, duck.sprite.y));
-			if (hit_snake) dispatchEvent(new GameEvent(GameEvent.INJURY));
+			if (injured) dispatchEvent(new GameEvent(GameEvent.INJURY));
 			
 		} else {
 			for (i in 0...ducklings.length) {
