@@ -24,6 +24,9 @@ import util.Mask;
 class Main extends Sprite {
 	
 	private var intro_screen:Sprite;
+	private var outro_screen:Sprite;
+	
+	private var outro_screen_text:TextField;
 	
 	var fishing_game:FishingGame;
 	var snakeing_game:SnakeingGame;
@@ -47,6 +50,7 @@ class Main extends Sprite {
 	
 	private var score:Int;
 	private var highscore:Int;
+	private var old_highscore:Int;
 	
 	private var mistake_sprite:Sprite;
 	
@@ -70,7 +74,7 @@ class Main extends Sprite {
 		evading_game.addEventListener(GameEvent.INJURY, onInjury);
 		
 		time_display = new TextField();
-		time_display.setTextFormat(new TextFormat(null, 40, 0xFFFFFF));
+		time_display.setTextFormat(new TextFormat(null, 40, 0xFF4444));
 		time_display.x = Lib.current.stage.stageWidth / 2 - time_display.width / 2;
 		time_display.autoSize = TextFieldAutoSize.CENTER;
 		addChild(time_display);
@@ -94,10 +98,16 @@ class Main extends Sprite {
 		
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onSpaceKey);
 		
-		highscore = 0;
+		old_highscore = highscore = 0;
 		highscore_display.text = Std.string(highscore);
 		
 		mistake_sprite = Assets.getMovieClip("graphics:MISTAKE");
+		
+		outro_screen = Assets.getMovieClip("graphics:outro_screen");
+		outro_screen_text = new TextField();
+		outro_screen_text.autoSize = TextFieldAutoSize.CENTER;
+		outro_screen_text.setTextFormat(new TextFormat(null, 40, 0xFFFFFF));
+		outro_screen.addChild(outro_screen_text);
 	}
 	
 	private function onSpaceKey(event:KeyboardEvent):Void{
@@ -216,6 +226,28 @@ class Main extends Sprite {
 		addChild(mistake_sprite);
 		
 		removeEventListener(Event.ENTER_FRAME, countTimeOnEnterFrame);
+		
+		info_screen = outro_screen;
+		outro_screen.y = 600;
+		addChild(outro_screen);
+		
+		outro_screen_text.text = "Game Over\n" +
+				(highscore > old_highscore ? "Congrats! New HIGH SCORE!\n" : "BOO! You didn't improve your score.\n") +
+				"\n\n" + "Press SPACE to play again.";
+				
+		outro_screen_text.x = 800 / 2 - outro_screen_text.width / 2;
+		outro_screen_text.y = 600 / 2 - outro_screen_text.height / 2;
+		
+		if (highscore > old_highscore) old_highscore = highscore;
+		
+		Actuate.tween(outro_screen, 1, {y:0}).delay(1).onComplete(function () {
+			for (minigame in minigames_queue) minigame.reset(); // reset all
+			
+			removeChild(minigames_queue[current_game]);
+			removeChild(mistake_sprite);
+			
+			stage.addEventListener(KeyboardEvent.KEY_DOWN, onSpaceKey);
+		});
 	}
 
 }

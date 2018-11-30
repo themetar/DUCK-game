@@ -213,7 +213,7 @@ class EvadingGame extends Game {
 		// add first crosshair
 		crosshair_array = [new NPC()];
 		crosshair_array[0].sprite = Assets.getMovieClip("graphics:crosshair");
-		addChildAt(crosshair_array[0].sprite, 0);
+		addChildAt(crosshair_array[0].sprite, 1);
 		
 		var cross_target_x = the_duck.position.x + 50 / 2; // hardcoded duck graphic width
 		var cross_target_y = the_duck.position.x + 50 / 2;

@@ -196,8 +196,7 @@ class SnakeingGame extends Game {
 				duckling.speed_x = walk_speed * (duckling.target_x - duckling.x);
 				duckling.speed_y = walk_speed * (duckling.target_y - duckling.y);
 			}
-			
-			
+				
 				
 				
 			// apply complete movement
