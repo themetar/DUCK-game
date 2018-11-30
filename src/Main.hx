@@ -42,6 +42,11 @@ class Main extends Sprite {
 	private var time:Int;
 	
 	private var time_display:TextField;
+	private var score_display:TextField;
+	private var highscore_display:TextField;
+	
+	private var score:Int;
+	private var highscore:Int;
 	
 	private var info_screen:Sprite;
 
@@ -63,6 +68,18 @@ class Main extends Sprite {
 		time_display.x = Lib.current.stage.stageWidth / 2 - time_display.width / 2;
 		time_display.autoSize = TextFieldAutoSize.CENTER;
 		addChild(time_display);
+		
+		score_display = new TextField();
+		score_display.setTextFormat(new TextFormat(null, 40, 0xFFFFFF));
+		score_display.x = 20;
+		score_display.autoSize = TextFieldAutoSize.LEFT;
+		addChild(score_display);
+		
+		highscore_display = new TextField();
+		highscore_display.setTextFormat(new TextFormat(null, 40, 0xFFFFFF));
+		highscore_display.x = 800 - 20 - highscore_display.width;
+		highscore_display.autoSize = TextFieldAutoSize.RIGHT;
+		addChild(highscore_display);
 				
 		mask_shape = new Mask(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 		
@@ -70,6 +87,9 @@ class Main extends Sprite {
 		addChild(intro_screen);
 		
 		stage.addEventListener(KeyboardEvent.KEY_DOWN, onSpaceKey);
+		
+		highscore = 0;
+		highscore_display.text = Std.string(highscore);
 	}
 	
 	private function onSpaceKey(event:KeyboardEvent):Void{
@@ -96,7 +116,8 @@ class Main extends Sprite {
 			minigames_queue[current_game].resume();
 		});
 		
-		
+		score = 0;
+		score_display.text = Std.string(score);
 	}
 	
 	private function onEnterFrame(event:Event):Void{
@@ -168,6 +189,14 @@ class Main extends Sprite {
 		Actuate.tween(text, 1, {alpha: 0, y: text.y - 50}).onComplete(function (){
 			removeChild(text);
 		});
+		
+		score += 10;
+		score_display.text = Std.string(score);
+		
+		if (score > highscore){
+			highscore = score;
+			highscore_display.text = Std.string(highscore);
+		}
 	}
 
 }
