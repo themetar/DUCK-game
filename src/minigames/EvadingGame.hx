@@ -44,7 +44,7 @@ class EvadingGame extends Game {
 	
 	private var cross_velocities:Array<XYVector>;
 	
-	private static var CROSS_RADIUS:Float = 35;
+	private static var CROSS_RADIUS:Float = 30;
 	
 	private var background:Sprite;
 	
@@ -124,11 +124,11 @@ class EvadingGame extends Game {
 			
 			// hit
 			
-			var distance = Math.sqrt(Math.pow(crosshair.x - the_duck.position.x + 50 / 2, 2) + Math.pow(crosshair.y - the_duck.position.y + 50 / 2, 2));
+			var distance = Math.sqrt(Math.pow(crosshair.x - the_duck.position.x - 50 / 2, 2) + Math.pow(crosshair.y - the_duck.position.y - 50 / 2, 2));
 			if (distance <= CROSS_RADIUS) {
 				// shot
 				dispatchEvent(new GameEvent(GameEvent.INJURY));				
-			} else if (CROSS_RADIUS < distance && distance < CROSS_RADIUS + 20) {
+			} else if (CROSS_RADIUS < distance && distance < CROSS_RADIUS + 40) {
 				// near miss, get points
 				dispatchEvent(new GameEvent(GameEvent.SCORE));
 			}
