@@ -8,6 +8,8 @@ import minigames.core.GameEvent;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.Lib;
+import openfl.Assets;
+import openfl.events.KeyboardEvent;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 import openfl.text.TextFieldAutoSize;
@@ -20,6 +22,8 @@ import util.Mask;
  * @author Dimitar
  */
 class Main extends Sprite {
+	
+	private var intro_screen:Sprite;
 	
 	var fishing_game:FishingGame;
 	var snakeing_game:SnakeingGame;
@@ -38,6 +42,8 @@ class Main extends Sprite {
 	private var time:Int;
 	
 	private var time_display:TextField;
+	
+	private var info_screen:Sprite;
 
 	public function new() {
 		super();
@@ -52,8 +58,6 @@ class Main extends Sprite {
 		snakeing_game.addEventListener(GameEvent.SCORE, onScore);
 		evading_game.addEventListener(GameEvent.SCORE, onScore);
 		
-		
-		
 		time_display = new TextField();
 		time_display.setTextFormat(new TextFormat(null, 40, 0xFFFFFF));
 		time_display.x = Lib.current.stage.stageWidth / 2 - time_display.width / 2;
@@ -62,7 +66,15 @@ class Main extends Sprite {
 				
 		mask_shape = new Mask(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 		
+		info_screen = intro_screen = Assets.getMovieClip("graphics:intro_screen");
+		addChild(intro_screen);
+		
+		stage.addEventListener(KeyboardEvent.KEY_DOWN, onSpaceKey);
+	}
+	
+	private function onSpaceKey(event:KeyboardEvent):Void{
 		re_play();
+		stage.removeEventListener(KeyboardEvent.KEY_DOWN, onSpaceKey);
 	}
 	
 	private function re_play():Void {
@@ -70,12 +82,21 @@ class Main extends Sprite {
 		current_game = 0;
 		upped = 0;
 		
+		minigames_queue[current_game].pause();
 		addChildAt(minigames_queue[current_game], 0);
 		
-		switch_countdown = SLOT_PLAYTIME;
-		time = Lib.getTimer();
+		Actuate.tween(info_screen, 1, {y: -600}).onComplete(function (){
+			removeChild(info_screen);
+			
+			switch_countdown = SLOT_PLAYTIME;
+			time = Lib.getTimer();
 		
-		addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			addEventListener(Event.ENTER_FRAME, onEnterFrame);
+			
+			minigames_queue[current_game].resume();
+		});
+		
+		
 	}
 	
 	private function onEnterFrame(event:Event):Void{
