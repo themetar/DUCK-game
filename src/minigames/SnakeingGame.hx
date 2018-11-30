@@ -81,9 +81,11 @@ class SnakeingGame extends Game {
 			
 		back_green = Assets.getMovieClip("graphics:green");
 		addChildAt(back_green, 0);
+		back_green.cacheAsBitmap = true;
 		
 		field = Assets.getMovieClip("graphics:checkerfield");
 		addChildAt(field, 1);
+		field.cacheAsBitmap = true;
 	}
 	
 	override function update(delta_time:Int):Void {
