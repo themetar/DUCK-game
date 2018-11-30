@@ -7,6 +7,7 @@ import openfl.Assets;
 import openfl.display.Sprite;
 import openfl.events.KeyboardEvent;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import openfl.ui.Keyboard;
 
 /**
@@ -116,7 +117,7 @@ class FishingGame extends Game {
 		
 		// test collision
 		for (fish in fishes) {
-			if (duck_graphic.hitTestObject(fish.sprite)) {
+			if (new Rectangle(duck_position.x, duck_position.y, 50, 50).intersects(new Rectangle(fish.x, fish.y, 30, 30))) {
 				fish.to_remove = true;
 				dispatchEvent(new GameEvent(GameEvent.SCORE, fish.sprite.x, fish.sprite.y));
 			}

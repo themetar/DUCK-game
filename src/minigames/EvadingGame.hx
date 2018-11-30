@@ -49,21 +49,21 @@ class EvadingGame extends Game {
 	private var background:Sprite;
 	
 	private var duck_sprites:Map<String, Sprite>;
+	
+	private var orientation = "right";
 
 	public function new() {
 		super();
 		
-		duck_sprites = ["swim-left" => Assets.getMovieClip("graphics:duck_swim_left"),
-				"swim-right" => Assets.getMovieClip("graphics:duck_swim_right"),
-				"dive-down-left" => Assets.getMovieClip("graphics:duck_dive_down_left"),
-				"dive-up-left" => Assets.getMovieClip("graphics:duck_dive_up_left"),
-				"dive-down-right" => Assets.getMovieClip("graphics:duck_dive_down_right"),
-				"dive-up-right" => Assets.getMovieClip("graphics:duck_dive_up_right")];
+		duck_sprites = ["fly-left" => Assets.getMovieClip("graphics:duck_fly_left"),
+				"fly-right" => Assets.getMovieClip("graphics:duck_fly_right"),
+				"walk-left" => Assets.getMovieClip("graphics:duck_walking_left"),
+				"walk-right" => Assets.getMovieClip("graphics:duck_walking_right")];
 		
 		the_duck = {
 			position: {x: camera.width / 2, y: camera.height / 2},
 			velocity: {x: X_SPEED, y: 0},
-			sprite: duck_sprites.get("swim-right")
+			sprite: duck_sprites.get("walk-right")
 		};
 		addChild(the_duck.sprite);
 		
@@ -84,6 +84,8 @@ class EvadingGame extends Game {
 		the_duck.velocity.x = left_right_down.get(Keyboard.LEFT) ? -X_SPEED : left_right_down.get(Keyboard.RIGHT) ? X_SPEED : 0;
 		
 		var y_acceleration = gravity + (left_right_down.get(Keyboard.LEFT) || left_right_down.get(Keyboard.RIGHT) ? lift : 0);
+		
+		orientation = left_right_down.get(Keyboard.LEFT) ? "left" : left_right_down.get(Keyboard.RIGHT) ? "right" : orientation;
 		
 		the_duck.position.y += the_duck.velocity.y * seconds_time + y_acceleration / 2 * seconds_time * seconds_time;
 		the_duck.velocity.y += y_acceleration * seconds_time;
@@ -137,6 +139,16 @@ class EvadingGame extends Game {
 	
 	override function render(delta_time:Int):Void {
 		super.render(delta_time);
+		
+		var sprite_name:String = the_duck.velocity.y < 0 || (left_right_down.get(Keyboard.LEFT) || left_right_down.get(Keyboard.RIGHT)) && the_duck.position.y > camera.height - 50 ? "fly" : "walk";
+		sprite_name += "-" + orientation;
+		var sprite = duck_sprites.get(sprite_name);
+		
+		if (sprite != the_duck.sprite) {
+			addChild(sprite);
+			removeChild(the_duck.sprite);
+			the_duck.sprite = sprite;
+		}
 		
 		the_duck.sprite.x = the_duck.position.x - camera.x;
 		the_duck.sprite.y = the_duck.position.y - camera.y;

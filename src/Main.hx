@@ -138,7 +138,7 @@ class Main extends Sprite {
 			*/
 		}
 		
-		time_display.text = Math.round(switch_countdown / 1000);
+		time_display.text = Std.string(Math.round(switch_countdown / 1000));
 		
 		time = current_time;
 	}
