@@ -140,7 +140,7 @@ class EvadingGame extends Game {
 	override function render(delta_time:Int):Void {
 		super.render(delta_time);
 		
-		var sprite_name:String = the_duck.velocity.y < 0 || (left_right_down.get(Keyboard.LEFT) || left_right_down.get(Keyboard.RIGHT)) && the_duck.position.y > camera.height - 50 ? "fly" : "walk";
+		var sprite_name:String = the_duck.velocity.y < 0 || (left_right_down.get(Keyboard.LEFT) || left_right_down.get(Keyboard.RIGHT)) && the_duck.position.y < camera.height - 50 ? "fly" : "walk";
 		sprite_name += "-" + orientation;
 		var sprite = duck_sprites.get(sprite_name);
 		
