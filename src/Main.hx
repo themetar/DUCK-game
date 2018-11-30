@@ -200,6 +200,7 @@ class Main extends Sprite {
 	
 	private function onScore(event:GameEvent):Void{
 		var text:TextField = new TextField();
+		text.setTextFormat(new TextFormat(null, 20, 0xffffff));
 		text.text = "+10";
 		text.x = event.screen_x;
 		text.y = event.screen_y;

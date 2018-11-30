@@ -130,7 +130,7 @@ class EvadingGame extends Game {
 				dispatchEvent(new GameEvent(GameEvent.INJURY));				
 			} else if (CROSS_RADIUS < distance && distance < CROSS_RADIUS + 40) {
 				// near miss, get points
-				dispatchEvent(new GameEvent(GameEvent.SCORE));
+				dispatchEvent(new GameEvent(GameEvent.SCORE, crosshair.x, crosshair.y - CROSS_RADIUS));
 			}
 			
 		}
